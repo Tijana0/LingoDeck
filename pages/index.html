@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lingodeck Documentation</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+        .container {
+            background: white;
+            padding: 2rem 3rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        h1 { border-bottom: 2px solid #eaeaea; padding-bottom: 0.3em; margin-bottom: 1rem; color: #2c3e50; }
+        h2 { border-bottom: 1px solid #eaeaea; padding-bottom: 0.3em; margin-top: 2rem; color: #34495e; }
+        h3 { margin-top: 1.5rem; color: #455a64; }
+        ul, ol { padding-left: 2rem; }
+        li { margin-bottom: 0.5rem; }
+        p { margin-bottom: 1rem; }
+        strong { font-weight: 600; color: #000; }
+        hr { border: 0; border-top: 1px solid #eaeaea; margin: 2rem 0; }
+        
+        /* Mermaid Diagram Container */
+        .mermaid-container {
+            display: flex;
+            justify-content: center;
+            background-color: #f4f6f8;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Lingodeck</h1>
+
+    <h3>Team Members</h3>
+    <ul>
+        <li>Tijana Mijatović</li>
+        <li>Diana Simonicova</li>
+    </ul>
+
+    <h3>Project Description</h3>
+    <p>
+        Lingodeck is a native Android app designed to make language learning efficient and permanent. 
+        Built with <strong>Kotlin</strong> and <strong>Jetpack Compose</strong>, it uses a 
+        <strong>Spaced Repetition System (SRS)</strong> algorithm to schedule flashcard reviews at the optimal moment, 
+        just before a user is likely to forget a word. This way users can maximize their retention while not wasting study time.
+    </p>
+
+    <hr>
+
+    <h2>App Concept</h2>
+
+    <h3>1. Use Case</h3>
+    <p>
+        <strong>Efficient Vocabulary Acquisition:</strong><br>
+        The primary use case is daily vocabulary study for language learners. Instead of reviewing static lists or paper flashcards 
+        (which leads to over-studying known words and under-studying difficult ones), the user opens Lingodeck once a day. 
+        The app automatically presents only the specific cards that are "due" based on the user's past performance, 
+        handling the complex scheduling logic in the background.
+    </p>
+
+    <h3>2. Target User</h3>
+    <ul>
+        <li><strong>Language Learners:</strong> Anyone learning a new language who wants to optimize their vocab studying.</li>
+    </ul>
+
+    <h3>3. User Flow & Prototype</h3>
+    <p>The user flow demonstrates how a user navigates from opening the app to completing a study session.</p>
+
+    <div class="mermaid-container">
+        <div class="mermaid">
+graph TD
+    A[Start App] --> B[<b>Deck List Screen</b><br/>View all language decks]
+    B -->|Click '+'| C[<b>Add Deck Screen</b><br/>Create new topic]
+    C -->|Save| B
+    
+    B -->|Select 'German'| D[<b>Deck Detail Screen</b><br/>View Chart & Stats]
+    
+    D -->|Click 'Add Flashcard'| E[<b>Add Card Screen</b><br/>Input Front/Back]
+    E -->|Save| D
+    
+    D -->|Click 'Start Review'| F[<b>Review Screen</b><br/>Front of Card appears]
+    
+    F -->|Tap Card| G[<b>Review Screen</b><br/>Back of Card revealed]
+    
+    G -->|Swipe Left| H[<b>Grading: Fail</b><br/>Reset Interval to 1 day]
+    G -->|Swipe Right| I[<b>Grading: Pass</b><br/>Increase Interval e.g. 6 days]
+    
+    H --> J{More Cards?}
+    I --> J
+    
+    J -->|Yes| F
+    J -->|No| K[<b>Summary State</b><br/>'Review Complete']
+    K -->|Back| D
+        </div>
+    </div>
+
+    <p><strong>Screen Breakdown:</strong></p>
+    <ol>
+        <li><strong>Deck List (Home):</strong> The entry point where users manage different languages (e.g., German, Spanish).</li>
+        <li><strong>Deck Detail (Dashboard):</strong> A view showing the "Upcoming Reviews" bar chart and a list of all cards. This allows the user to see their workload for the week.</li>
+        <li><strong>Study Mode (The Core Loop):</strong> The clean interface where cards are presented. Users interact via gestures (swiping) to grade their memory retention, which immediately updates the database schedule.</li>
+    </ol>
+</div>
+
+<script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+</script>
+
+</body>
+</html>
