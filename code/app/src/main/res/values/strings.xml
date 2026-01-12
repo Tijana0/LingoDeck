@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Flashcard App</string>
+    <string name="add_flashcard">Add Flashcard</string>
+    <string name="flashcard_front">Front</string>
+    <string name="flashcard_back">Back</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="no_flashcards">No flashcards available</string>
+</resources>
