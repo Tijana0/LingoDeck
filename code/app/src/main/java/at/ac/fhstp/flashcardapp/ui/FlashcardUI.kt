@@ -274,12 +274,11 @@ fun DeckDetailScreen(
                                     Text(text = flashcard.front, style = MaterialTheme.typography.bodyLarge)
                                     Text(text = flashcard.back, style = MaterialTheme.typography.bodyMedium)
                                 }
-                                Row {
-                                    IconButton(onClick = { onEditFlashcardClick(flashcard) }) {
-                                        Icon(Icons.Default.Edit, contentDescription = "Edit flashcard", tint = MaterialTheme.colorScheme.primary)
-                                    }
-                                    IconButton(onClick = { onDeleteFlashcardClick(flashcard) }) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Delete flashcard", tint = MaterialTheme.colorScheme.error)
+                                                                Row {
+                                                                    IconButton(onClick = { onEditFlashcardClick(flashcard) }) {
+                                                                        Icon(Icons.Default.Edit, contentDescription = "Edit flashcard", tint = Color.White)
+                                                                    }
+                                                                    IconButton(onClick = { onDeleteFlashcardClick(flashcard) }) {                                        Icon(Icons.Default.Delete, contentDescription = "Delete flashcard", tint = MaterialTheme.colorScheme.error)
                                     }
                                 }
                             }
