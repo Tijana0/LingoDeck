@@ -21,9 +21,10 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
             initialValue = emptyList()
         )
 
-    fun addDeck(name: String) {
+    fun addDeck(name: String, onComplete: () -> Unit) {
         viewModelScope.launch {
             repository.addDeck(name)
+            onComplete()
         }
     }
 

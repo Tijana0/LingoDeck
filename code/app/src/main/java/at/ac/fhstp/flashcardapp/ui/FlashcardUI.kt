@@ -109,8 +109,9 @@ fun FlashcardApp(
             composable(Routes.AddDeck.name) {
                 AddDeckScreen(
                     onSave = { deckName ->
-                        viewModel.addDeck(deckName)
-                        navController.popBackStack()
+                        viewModel.addDeck(deckName) {
+                            navController.popBackStack()
+                        }
                     }
                 )
             }
