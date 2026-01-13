@@ -510,8 +510,25 @@ fun AddDeckScreen(onSave: (String, String, String) -> Unit) {
         "de" to "German",
         "fr" to "French",
         "es" to "Spanish",
-        "it" to "Italian"
-    )
+        "it" to "Italian",
+        "ja" to "Japanese",
+        "zh" to "Chinese",
+        "ko" to "Korean",
+        "ru" to "Russian",
+        "pt" to "Portuguese",
+        "nl" to "Dutch",
+        "tr" to "Turkish",
+        "ar" to "Arabic",
+        "el" to "Greek",
+        "pl" to "Polish",
+        "sv" to "Swedish",
+        "da" to "Danish",
+        "no" to "Norwegian",
+        "fi" to "Finnish",
+        "hi" to "Hindi",
+        "th" to "Thai",
+        "vi" to "Vietnamese"
+    ).sortedBy { it.second }
 
     Column(
         modifier = Modifier
