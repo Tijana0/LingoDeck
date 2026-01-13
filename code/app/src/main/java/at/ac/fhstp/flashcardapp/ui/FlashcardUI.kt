@@ -1,5 +1,6 @@
 package at.ac.fhstp.flashcardapp.ui
 
+import android.speech.tts.TextToSpeech
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -21,6 +23,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
@@ -96,8 +99,12 @@ fun FlashcardApp(
             ) { backStackEntry ->
                 val deckId = backStackEntry.arguments?.getInt("deckId") ?: 0
                 val dueFlashcards by viewModel.getDueFlashcards(deckId).collectAsState(initial = null)
+                val decks by viewModel.decks.collectAsState()
+                val deck = decks.find { it.id == deckId }
+
                 ReviewScreen(
                     dueFlashcards = dueFlashcards,
+                    deck = deck,
                     onAnswer = { flashcard, isCorrect ->
                         viewModel.processAnswer(flashcard, isCorrect)
                     },
@@ -108,8 +115,8 @@ fun FlashcardApp(
             }
             composable(Routes.AddDeck.name) {
                 AddDeckScreen(
-                    onSave = { deckName ->
-                        viewModel.addDeck(deckName) {
+                    onSave = { deckName, frontLang, backLang ->
+                        viewModel.addDeck(deckName, frontLang, backLang) {
                             navController.popBackStack()
                         }
                     }
@@ -281,6 +288,7 @@ fun UpcomingReviewsChart(chartData: List<Pair<String, Int>>) {
 @Composable
 fun ReviewScreen(
     dueFlashcards: List<Flashcard>?,
+    deck: Deck?,
     onAnswer: (Flashcard, Boolean) -> Unit,
     onReviewComplete: () -> Unit
 ) {
@@ -292,6 +300,42 @@ fun ReviewScreen(
     val density = LocalDensity.current
     val screenWidth = with(density) { configuration.screenWidthDp.dp.toPx() }
     val threshold = screenWidth * 0.3f
+
+    val context = LocalContext.current
+    var tts by remember { mutableStateOf<TextToSpeech?>(null) }
+    var isTtsReady by remember { mutableStateOf(false) }
+
+    DisposableEffect(context) {
+        val ttsInstance = TextToSpeech(context) { status ->
+            if (status == TextToSpeech.SUCCESS) {
+                isTtsReady = true
+            }
+        }
+        tts = ttsInstance
+        onDispose {
+            ttsInstance.stop()
+            ttsInstance.shutdown()
+        }
+    }
+
+    fun speak(text: String, langCode: String) {
+        if (isTtsReady) {
+            tts?.language = Locale(langCode)
+            tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+        }
+    }
+
+    // Auto-play TTS when card changes or flips
+    if (dueFlashcards != null && currentCardIndex < dueFlashcards.size && deck != null) {
+        val flashcard = dueFlashcards[currentCardIndex]
+        LaunchedEffect(currentCardIndex, showBack, isTtsReady) {
+            if (isTtsReady) {
+                val textToSpeak = if (showBack) flashcard.back else flashcard.front
+                val lang = if (showBack) deck.backLanguage else deck.frontLanguage
+                speak(textToSpeak, lang)
+            }
+        }
+    }
 
     // Handle Empty State (No cards due)
     if (dueFlashcards != null && dueFlashcards.isEmpty()) {
@@ -368,7 +412,7 @@ fun ReviewScreen(
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(200.dp)
+                                .height(250.dp)
                                 .padding(16.dp)
                                 .offset { IntOffset(offset.value.roundToInt(), 0) }
                                 .pointerInput(Unit) {
@@ -405,11 +449,36 @@ fun ReviewScreen(
                                 .clickable { if (!showBack) showBack = true },
                             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                         ) {
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
                                 Text(
                                     text = if (showBack) flashcard.back else flashcard.front,
                                     style = MaterialTheme.typography.headlineMedium
                                 )
+                                Spacer(modifier = Modifier.height(24.dp))
+                                if (deck != null) {
+                                    FilledIconButton(
+                                        onClick = {
+                                            val textToSpeak = if (showBack) flashcard.back else flashcard.front
+                                            val lang = if (showBack) deck.backLanguage else deck.frontLanguage
+                                            speak(textToSpeak, lang)
+                                        },
+                                        modifier = Modifier.size(56.dp),
+                                        colors = IconButtonDefaults.filledIconButtonColors(
+                                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                    ) {
+                                        Icon(
+                                            Icons.AutoMirrored.Filled.VolumeUp,
+                                            contentDescription = "Speak",
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }
+                                }
                             }
                         }
                         Spacer(modifier = Modifier.height(16.dp))
@@ -428,8 +497,18 @@ fun ReviewScreen(
 }
 
 @Composable
-fun AddDeckScreen(onSave: (String) -> Unit) {
+fun AddDeckScreen(onSave: (String, String, String) -> Unit) {
     var deckName by remember { mutableStateOf("") }
+    var frontLang by remember { mutableStateOf("de") }
+    var backLang by remember { mutableStateOf("en") }
+
+    val languages = listOf(
+        "en" to "English",
+        "de" to "German",
+        "fr" to "French",
+        "es" to "Spanish",
+        "it" to "Italian"
+    )
 
     Column(
         modifier = Modifier
@@ -444,8 +523,51 @@ fun AddDeckScreen(onSave: (String) -> Unit) {
             label = { Text("Deck Name") },
             modifier = Modifier.fillMaxWidth()
         )
+        
+        Text(text = "Languages", style = MaterialTheme.typography.titleMedium)
+        
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // Front Language
+            var expandedFront by remember { mutableStateOf(false) }
+            Box(modifier = Modifier.weight(1f)) {
+                OutlinedButton(onClick = { expandedFront = true }, modifier = Modifier.fillMaxWidth()) {
+                    Text("Front: ${languages.find { it.first == frontLang }?.second}")
+                }
+                DropdownMenu(expanded = expandedFront, onDismissRequest = { expandedFront = false }) {
+                    languages.forEach { (code, name) ->
+                        DropdownMenuItem(
+                            text = { Text(name) },
+                            onClick = {
+                                frontLang = code
+                                expandedFront = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            // Back Language
+            var expandedBack by remember { mutableStateOf(false) }
+            Box(modifier = Modifier.weight(1f)) {
+                OutlinedButton(onClick = { expandedBack = true }, modifier = Modifier.fillMaxWidth()) {
+                    Text("Back: ${languages.find { it.first == backLang }?.second}")
+                }
+                DropdownMenu(expanded = expandedBack, onDismissRequest = { expandedBack = false }) {
+                    languages.forEach { (code, name) ->
+                        DropdownMenuItem(
+                            text = { Text(name) },
+                            onClick = {
+                                backLang = code
+                                expandedBack = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
         Button(
-            onClick = { if (deckName.isNotBlank()) onSave(deckName) },
+            onClick = { if (deckName.isNotBlank()) onSave(deckName, frontLang, backLang) },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Save")

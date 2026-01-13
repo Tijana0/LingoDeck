@@ -15,18 +15,25 @@ class FlashcardRepository(
     // Deck methods
     val allDecks: Flow<List<Deck>> = deckDao.getAllDecks().map { entities ->
         entities.map { entity ->
-            Deck(entity.id, entity.name)
+            Deck(entity.id, entity.name, entity.frontLanguage, entity.backLanguage)
         }
     }
 
-    suspend fun addDeck(name: String) {
-        val entity = DeckEntity(name = name)
+    suspend fun addDeck(name: String, frontLanguage: String = "de", backLanguage: String = "en") {
+        val entity = DeckEntity(name = name, frontLanguage = frontLanguage, backLanguage = backLanguage)
         deckDao.addDeck(entity)
     }
 
     suspend fun deleteDeck(deck: Deck) {
-        val entity = DeckEntity(id = deck.id, name = deck.name)
+        val entity = DeckEntity(id = deck.id, name = deck.name, frontLanguage = deck.frontLanguage, backLanguage = deck.backLanguage)
         deckDao.deleteDeck(entity)
+    }
+
+    suspend fun getDeckById(deckId: Int): Deck? {
+        // Since we don't have a direct getDeckById in Dao, we could add it or filter allDecks.
+        // For simplicity, let's assume we might need to fetch a single deck's metadata.
+        // Let's add it to Dao later if needed. For now we will get it from the list in VM.
+        return null 
     }
 
     // Flashcard methods

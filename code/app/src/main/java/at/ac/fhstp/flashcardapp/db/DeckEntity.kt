@@ -7,5 +7,7 @@ import androidx.room.PrimaryKey
 data class DeckEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val name: String
+    val name: String,
+    val frontLanguage: String = "de",
+    val backLanguage: String = "en"
 )
