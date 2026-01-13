@@ -240,22 +240,25 @@ fun DeckDetailScreen(
                 onDismissRequest = { showDeleteDialog = false },
                 title = { Text("Delete Flashcard") },
                 text = { Text("Are you sure you want to delete this flashcard?") },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            onDeleteFlashcardClick(flashcardToDelete!!)
-                            showDeleteDialog = false
-                        }
-                    ) {
-                        Text("Delete")
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showDeleteDialog = false }) {
-                        Text("Cancel")
-                    }
-                }
-            )
+                            confirmButton = {
+                                TextButton(
+                                    onClick = {
+                                        onDeleteFlashcardClick(flashcardToDelete!!)
+                                        showDeleteDialog = false
+                                    },
+                                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
+                                ) {
+                                    Text("Delete")
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(
+                                    onClick = { showDeleteDialog = false },
+                                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
+                                ) {
+                                    Text("Cancel")
+                                }
+                            }            )
         }
     
         Scaffold(
