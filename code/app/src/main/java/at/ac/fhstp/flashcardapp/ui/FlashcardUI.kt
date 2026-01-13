@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -284,54 +285,21 @@ fun DeckDetailScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 Text("All Cards:", style = MaterialTheme.typography.headlineSmall)
                 Spacer(modifier = Modifier.height(8.dp))
-                LazyColumn {
-                    items(flashcards) { flashcard ->
-                        val formattedDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(flashcard.dueDate))
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(text = flashcard.front, style = MaterialTheme.typography.bodyLarge)
-                                        Text(text = flashcard.back, style = MaterialTheme.typography.bodyMedium)
-                                    }
-                                    Row {
-                                        IconButton(onClick = { onEditFlashcardClick(flashcard) }) {
-                                            Icon(Icons.Default.Edit, contentDescription = "Edit flashcard", tint = Color.White)
-                                        }
-                                        IconButton(onClick = {
+                            LazyColumn {
+                                items(flashcards) { flashcard ->
+                                    FlashcardItem(
+                                        flashcard = flashcard,
+                                        onEditClick = { onEditFlashcardClick(flashcard) },
+                                        onDeleteClick = {
                                             flashcardToDelete = flashcard
                                             showDeleteDialog = true
-                                        }) {
-                                            Icon(Icons.Default.Delete, contentDescription = "Delete flashcard", tint = MaterialTheme.colorScheme.error)
                                         }
-                                    }
-                                }
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text("Due: $formattedDate", style = MaterialTheme.typography.bodySmall)
-                                    Text("Interval: ${flashcard.interval}d", style = MaterialTheme.typography.bodySmall)
-                                    Text("Ease: ${flashcard.easeFactor}", style = MaterialTheme.typography.bodySmall)
+                                    )
                                 }
                             }
                         }
                     }
                 }
-            }
-        }
-    }
-
 @Composable
 fun UpcomingReviewsChart(chartData: List<Pair<String, Int>>) {
     val maxValue = chartData.maxOfOrNull { it.second } ?: 1
@@ -751,6 +719,75 @@ fun EditFlashcardScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Update")
+        }
+    }
+}
+
+@Composable
+fun FlashcardItem(
+    flashcard: Flashcard,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val formattedDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(flashcard.dueDate))
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = flashcard.front, style = MaterialTheme.typography.bodyLarge)
+                    Text(text = flashcard.back, style = MaterialTheme.typography.bodyMedium)
+                }
+                Box {
+                    IconButton(onClick = { expanded = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "More options")
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Edit") },
+                            onClick = {
+                                expanded = false
+                                onEditClick()
+                            },
+                            leadingIcon = {
+                                Icon(Icons.Default.Edit, contentDescription = null)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Delete") },
+                            onClick = {
+                                expanded = false
+                                onDeleteClick()
+                            },
+                            leadingIcon = {
+                                Icon(Icons.Default.Delete, contentDescription = null)
+                            }
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Due: $formattedDate", style = MaterialTheme.typography.bodySmall)
+                Text("Interval: ${flashcard.interval}d", style = MaterialTheme.typography.bodySmall)
+                Text("Ease: ${flashcard.easeFactor}", style = MaterialTheme.typography.bodySmall)
+            }
         }
     }
 }
