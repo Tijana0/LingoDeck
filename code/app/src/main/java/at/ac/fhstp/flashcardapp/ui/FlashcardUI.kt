@@ -240,25 +240,25 @@ fun DeckDetailScreen(
                 onDismissRequest = { showDeleteDialog = false },
                 title = { Text("Delete Flashcard") },
                 text = { Text("Are you sure you want to delete this flashcard?") },
-                            confirmButton = {
-                                TextButton(
-                                    onClick = {
-                                        onDeleteFlashcardClick(flashcardToDelete!!)
-                                        showDeleteDialog = false
-                                    },
-                                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
-                                ) {
-                                    Text("Delete")
-                                }
-                            },
-                            dismissButton = {
-                                TextButton(
-                                    onClick = { showDeleteDialog = false },
-                                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.secondary)
-                                ) {
-                                    Text("Cancel")
-                                }
-                            }            )
+                                        confirmButton = {
+                                            TextButton(
+                                                onClick = {
+                                                    onDeleteFlashcardClick(flashcardToDelete!!)
+                                                    showDeleteDialog = false
+                                                },
+                                                colors = ButtonDefaults.textButtonColors(contentColor = Color.White)
+                                            ) {
+                                                Text("Delete")
+                                            }
+                                        },
+                                        dismissButton = {
+                                            TextButton(
+                                                onClick = { showDeleteDialog = false },
+                                                colors = ButtonDefaults.textButtonColors(contentColor = Color.White)
+                                            ) {
+                                                Text("Cancel")
+                                            }
+                                        }            )
         }
     
         Scaffold(
