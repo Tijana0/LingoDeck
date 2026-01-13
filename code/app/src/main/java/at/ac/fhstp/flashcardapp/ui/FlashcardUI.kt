@@ -416,35 +416,37 @@ fun ReviewScreen(
                                 .height(250.dp)
                                 .padding(16.dp)
                                 .offset { IntOffset(offset.value.roundToInt(), 0) }
-                                .pointerInput(Unit) {
-                                    detectHorizontalDragGestures(
-                                        onDragEnd = {
-                                            scope.launch {
-                                                if (offset.value > threshold) {
-                                                    // Swipe Right (Correct)
-                                                    offset.animateTo(screenWidth)
-                                                    onAnswer(flashcard, true)
-                                                    showBack = false
-                                                    currentCardIndex++
-                                                    offset.snapTo(0f)
-                                                } else if (offset.value < -threshold) {
-                                                    // Swipe Left (Wrong)
-                                                    offset.animateTo(-screenWidth)
-                                                    onAnswer(flashcard, false)
-                                                    showBack = false
-                                                    currentCardIndex++
-                                                    offset.snapTo(0f)
-                                                } else {
-                                                    offset.animateTo(0f)
+                                .pointerInput(showBack) {
+                                    if (showBack) {
+                                        detectHorizontalDragGestures(
+                                            onDragEnd = {
+                                                scope.launch {
+                                                    if (offset.value > threshold) {
+                                                        // Swipe Right (Correct)
+                                                        offset.animateTo(screenWidth)
+                                                        onAnswer(flashcard, true)
+                                                        showBack = false
+                                                        currentCardIndex++
+                                                        offset.snapTo(0f)
+                                                    } else if (offset.value < -threshold) {
+                                                        // Swipe Left (Wrong)
+                                                        offset.animateTo(-screenWidth)
+                                                        onAnswer(flashcard, false)
+                                                        showBack = false
+                                                        currentCardIndex++
+                                                        offset.snapTo(0f)
+                                                    } else {
+                                                        offset.animateTo(0f)
+                                                    }
                                                 }
+                                            },
+                                            onDragCancel = {
+                                                scope.launch { offset.animateTo(0f) }
                                             }
-                                        },
-                                        onDragCancel = {
-                                            scope.launch { offset.animateTo(0f) }
+                                        ) { change, dragAmount ->
+                                            change.consume()
+                                            scope.launch { offset.snapTo(offset.value + dragAmount) }
                                         }
-                                    ) { change, dragAmount ->
-                                        change.consume()
-                                        scope.launch { offset.snapTo(offset.value + dragAmount) }
                                     }
                                 }
                                 .clickable { if (!showBack) showBack = true },
