@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -49,7 +50,8 @@ enum class Routes {
     DeckDetail,
     Review,
     AddDeck,
-    AddFlashcard
+    AddFlashcard,
+    EditFlashcard
 }
 
 @Composable
@@ -91,6 +93,12 @@ fun FlashcardApp(
                     },
                     onAddFlashcardClick = {
                         navController.navigate("${Routes.AddFlashcard.name}/$deckId")
+                    },
+                    onEditFlashcardClick = { flashcard ->
+                        navController.navigate("${Routes.EditFlashcard.name}/${flashcard.id}")
+                    },
+                    onDeleteFlashcardClick = { flashcard ->
+                        viewModel.deleteFlashcard(flashcard)
                     }
                 )
             }
@@ -134,6 +142,32 @@ fun FlashcardApp(
                         navController.popBackStack()
                     }
                 )
+            }
+            composable(
+                route = "${Routes.EditFlashcard.name}/{flashcardId}",
+                arguments = listOf(navArgument("flashcardId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val flashcardId = backStackEntry.arguments?.getInt("flashcardId") ?: 0
+                var flashcard by remember { mutableStateOf<Flashcard?>(null) }
+
+                LaunchedEffect(flashcardId) {
+                    flashcard = viewModel.getFlashcardById(flashcardId)
+                }
+
+                if (flashcard != null) {
+                    EditFlashcardScreen(
+                        initialFront = flashcard!!.front,
+                        initialBack = flashcard!!.back,
+                        onSave = { newFront, newBack ->
+                            viewModel.updateFlashcard(flashcard!!, newFront, newBack)
+                            navController.popBackStack()
+                        }
+                    )
+                } else {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
             }
         }
     }
@@ -194,7 +228,9 @@ fun DeckDetailScreen(
     dueFlashcardsCount: Int,
     chartData: List<Pair<String, Int>>,
     onStartReviewClick: () -> Unit,
-    onAddFlashcardClick: () -> Unit
+    onAddFlashcardClick: () -> Unit,
+    onEditFlashcardClick: (Flashcard) -> Unit,
+    onDeleteFlashcardClick: (Flashcard) -> Unit
 ) {
     Scaffold(
         floatingActionButton = {
@@ -229,8 +265,24 @@ fun DeckDetailScreen(
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = flashcard.front, style = MaterialTheme.typography.bodyLarge)
-                            Text(text = flashcard.back, style = MaterialTheme.typography.bodyMedium)
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(text = flashcard.front, style = MaterialTheme.typography.bodyLarge)
+                                    Text(text = flashcard.back, style = MaterialTheme.typography.bodyMedium)
+                                }
+                                Row {
+                                    IconButton(onClick = { onEditFlashcardClick(flashcard) }) {
+                                        Icon(Icons.Default.Edit, contentDescription = "Edit flashcard", tint = MaterialTheme.colorScheme.primary)
+                                    }
+                                    IconButton(onClick = { onDeleteFlashcardClick(flashcard) }) {
+                                        Icon(Icons.Default.Delete, contentDescription = "Delete flashcard", tint = MaterialTheme.colorScheme.error)
+                                    }
+                                }
+                            }
                             Spacer(modifier = Modifier.height(8.dp))
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -627,6 +679,46 @@ fun AddFlashcardScreen(onSave: (String, String) -> Unit) {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(stringResource(R.string.save))
+        }
+    }
+}
+
+@Composable
+fun EditFlashcardScreen(
+    initialFront: String,
+    initialBack: String,
+    onSave: (String, String) -> Unit
+) {
+    var front by remember { mutableStateOf(initialFront) }
+    var back by remember { mutableStateOf(initialBack) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(text = "Edit Flashcard", style = MaterialTheme.typography.headlineMedium)
+
+        OutlinedTextField(
+            value = front,
+            onValueChange = { front = it },
+            label = { Text(stringResource(R.string.flashcard_front)) },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = back,
+            onValueChange = { back = it },
+            label = { Text(stringResource(R.string.flashcard_back)) },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Button(
+            onClick = { if (front.isNotBlank()) onSave(front, back) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Update")
         }
     }
 }
