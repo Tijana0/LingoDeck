@@ -583,71 +583,18 @@ fun AddDeckScreen(onSave: (String, String, String) -> Unit) {
         Text(text = "Languages", style = MaterialTheme.typography.titleMedium)
         
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            // Front Language
-            var expandedFront by remember { mutableStateOf(false) }
-            Box(modifier = Modifier.weight(1f)) {
-                OutlinedButton(
-                    onClick = { expandedFront = true },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Front: ${languages.find { it.first == frontLang }?.second}",
-                            modifier = Modifier.weight(1f)
-                        )
-                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
-                    }
-                }
-                DropdownMenu(expanded = expandedFront, onDismissRequest = { expandedFront = false }) {
-                    languages.forEach { (code, name) ->
-                        DropdownMenuItem(
-                            text = { Text(name) },
-                            onClick = {
-                                frontLang = code
-                                expandedFront = false
-                            }
-                        )
-                    }
-                }
-            }
-
-            // Back Language
-            var expandedBack by remember { mutableStateOf(false) }
-            Box(modifier = Modifier.weight(1f)) {
-                OutlinedButton(
-                    onClick = { expandedBack = true },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Back: ${languages.find { it.first == backLang }?.second}",
-                            modifier = Modifier.weight(1f)
-                        )
-                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
-                    }
-                }
-                DropdownMenu(expanded = expandedBack, onDismissRequest = { expandedBack = false }) {
-                    languages.forEach { (code, name) ->
-                        DropdownMenuItem(
-                            text = { Text(name) },
-                            onClick = {
-                                backLang = code
-                                expandedBack = false
-                            }
-                        )
-                    }
-                }
-            }
+            LanguageDropdown(
+                label = "Front",
+                selectedCode = frontLang,
+                onLanguageSelected = { frontLang = it },
+                languages = languages
+            )
+            LanguageDropdown(
+                label = "Back",
+                selectedCode = backLang,
+                onLanguageSelected = { backLang = it },
+                languages = languages
+            )
         }
 
         Button(
@@ -661,39 +608,10 @@ fun AddDeckScreen(onSave: (String, String, String) -> Unit) {
 
 @Composable
 fun AddFlashcardScreen(onSave: (String, String) -> Unit) {
-    var front by remember { mutableStateOf("") }
-    var back by remember { mutableStateOf("") }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .padding(top = 32.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = stringResource(R.string.add_flashcard), style = MaterialTheme.typography.headlineMedium)
-
-        OutlinedTextField(
-            value = front,
-            onValueChange = { front = it },
-            label = { Text(stringResource(R.string.flashcard_front)) },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = back,
-            onValueChange = { back = it },
-            label = { Text(stringResource(R.string.flashcard_back)) },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Button(
-            onClick = { if (front.isNotBlank()) onSave(front, back) },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(stringResource(R.string.save))
-        }
-    }
+    FlashcardForm(
+        buttonText = stringResource(R.string.save),
+        onSave = onSave
+    )
 }
 
 @Composable
@@ -702,38 +620,12 @@ fun EditFlashcardScreen(
     initialBack: String,
     onSave: (String, String) -> Unit
 ) {
-    var front by remember { mutableStateOf(initialFront) }
-    var back by remember { mutableStateOf(initialBack) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = "Edit Flashcard", style = MaterialTheme.typography.headlineMedium)
-
-        OutlinedTextField(
-            value = front,
-            onValueChange = { front = it },
-            label = { Text(stringResource(R.string.flashcard_front)) },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        OutlinedTextField(
-            value = back,
-            onValueChange = { back = it },
-            label = { Text(stringResource(R.string.flashcard_back)) },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Button(
-            onClick = { if (front.isNotBlank()) onSave(front, back) },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Update")
-        }
-    }
+    FlashcardForm(
+        initialFront = initialFront,
+        initialBack = initialBack,
+        buttonText = "Update",
+        onSave = onSave
+    )
 }
 
 @Composable
@@ -801,6 +693,89 @@ fun FlashcardItem(
                 Text("Interval: ${flashcard.interval}d", style = MaterialTheme.typography.bodySmall)
                 Text("Ease: ${flashcard.easeFactor}", style = MaterialTheme.typography.bodySmall)
             }
+        }
+    }
+}
+
+@Composable
+fun LanguageDropdown(
+    label: String,
+    selectedCode: String,
+    onLanguageSelected: (String) -> Unit,
+    languages: List<Pair<String, String>>
+) {
+    var expanded by remember { mutableStateOf(false) }
+    Box(modifier = Modifier.weight(1f)) {
+        OutlinedButton(
+            onClick = { expanded = true },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = "$label: ${languages.find { it.first == selectedCode }?.second ?: selectedCode}",
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1
+                )
+                Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
+            }
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            languages.forEach { (code, name) ->
+                DropdownMenuItem(
+                    text = { Text(name) },
+                    onClick = {
+                        onLanguageSelected(code)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun FlashcardForm(
+    initialFront: String = "",
+    initialBack: String = "",
+    buttonText: String,
+    onSave: (String, String) -> Unit
+) {
+    var front by remember { mutableStateOf(initialFront) }
+    var back by remember { mutableStateOf(initialBack) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .padding(top = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(text = if (initialFront.isEmpty()) "Add Flashcard" else "Edit Flashcard", style = MaterialTheme.typography.headlineMedium)
+
+        OutlinedTextField(
+            value = front,
+            onValueChange = { front = it },
+            label = { Text("Front") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = back,
+            onValueChange = { back = it },
+            label = { Text("Back") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Button(
+            onClick = { if (front.isNotBlank()) onSave(front, back) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(buttonText)
         }
     }
 }
