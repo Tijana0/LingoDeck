@@ -594,6 +594,7 @@ fun AddDeckScreen(onSave: (String, String, String) -> Unit) {
         "no" to "Norwegian",
         "fi" to "Finnish",
         "hi" to "Hindi",
+        "id" to "Indonesian",
         "th" to "Thai",
         "vi" to "Vietnamese"
     ).sortedBy { it.second }
