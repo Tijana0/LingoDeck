@@ -517,7 +517,7 @@ fun AddDeckScreen(onSave: (String, String, String) -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .padding(top = 16.dp),
+            .padding(top = 32.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(text = "Add a new deck", style = MaterialTheme.typography.headlineMedium)
@@ -588,7 +588,7 @@ fun AddFlashcardScreen(onSave: (String, String) -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .padding(top = 16.dp),
+            .padding(top = 32.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(text = stringResource(R.string.add_flashcard), style = MaterialTheme.typography.headlineMedium)
