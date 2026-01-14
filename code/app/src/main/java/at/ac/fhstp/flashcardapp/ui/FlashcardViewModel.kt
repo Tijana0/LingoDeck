@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import at.ac.fhstp.flashcardapp.data.Deck
 import at.ac.fhstp.flashcardapp.data.Flashcard
 import at.ac.fhstp.flashcardapp.data.FlashcardRepository
+import at.ac.fhstp.flashcardapp.logic.AnkiImporter
 import at.ac.fhstp.flashcardapp.logic.SpacedRepetition
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -28,6 +29,19 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
         viewModelScope.launch {
             val cards = repository.getDueFlashcardsList(deckId)
             _reviewCards.value = cards.shuffled()
+        }
+    }
+
+    fun importAnkiDeck(context: android.content.Context, uri: android.net.Uri, deckName: String) {
+        viewModelScope.launch {
+            try {
+                val inputStream = context.contentResolver.openInputStream(uri)
+                if (inputStream != null) {
+                    AnkiImporter(context, repository).importApkg(inputStream, deckName)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 

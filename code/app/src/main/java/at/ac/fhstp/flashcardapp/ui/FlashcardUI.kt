@@ -1,6 +1,8 @@
 package at.ac.fhstp.flashcardapp.ui
 
 import android.speech.tts.TextToSpeech
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -68,13 +70,17 @@ fun FlashcardApp(
         ) {
             composable(Routes.DeckList.name) {
                 val decks by viewModel.decks.collectAsState()
+                val context = LocalContext.current
                 DeckListScreen(
                     decks = decks,
                     onDeckClick = { deck ->
                         navController.navigate("${Routes.DeckDetail.name}/${deck.id}")
                     },
                     onAddDeckClick = { navController.navigate(Routes.AddDeck.name) },
-                    onDeleteDeckClick = { deck -> viewModel.deleteDeck(deck) }
+                    onDeleteDeckClick = { deck -> viewModel.deleteDeck(deck) },
+                    onImportAnkiClick = { uri, name ->
+                        viewModel.importAnkiDeck(context, uri, name)
+                    }
                 )
             }
             composable(
@@ -185,12 +191,56 @@ fun DeckListScreen(
     decks: List<Deck>,
     onDeckClick: (Deck) -> Unit,
     onAddDeckClick: () -> Unit,
-    onDeleteDeckClick: (Deck) -> Unit
+    onDeleteDeckClick: (Deck) -> Unit,
+    onImportAnkiClick: (android.net.Uri, String) -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     var deckToDelete by remember { mutableStateOf<Deck?>(null) }
+    var showImportNameDialog by remember { mutableStateOf(false) }
+    var selectedUri by remember { mutableStateOf<android.net.Uri?>(null) }
+    var importName by remember { mutableStateOf("") }
+
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: android.net.Uri? ->
+        if (uri != null) {
+            selectedUri = uri
+            importName = "Imported Anki Deck" // Default name
+            showImportNameDialog = true
+        }
+    }
+
+    if (showImportNameDialog) {
+        AlertDialog(
+            onDismissRequest = { showImportNameDialog = false },
+            title = { Text("Import Anki Deck") },
+            text = {
+                Column {
+                    Text("Enter a name for the new deck:")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = importName,
+                        onValueChange = { importName = it },
+                        label = { Text("Deck Name") }
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    if (importName.isNotBlank() && selectedUri != null) {
+                        onImportAnkiClick(selectedUri!!, importName)
+                        showImportNameDialog = false
+                    }
+                }) { Text("Import") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showImportNameDialog = false }) { Text("Cancel") }
+            }
+        )
+    }
 
     if (showDeleteDialog && deckToDelete != null) {
+        // ... (previous delete dialog code)
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
             title = { Text("Delete Deck") },
@@ -219,8 +269,18 @@ fun DeckListScreen(
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddDeckClick) {
-                Icon(Icons.Default.Add, contentDescription = "Add deck")
+            Column(horizontalAlignment = Alignment.End) {
+                SmallFloatingActionButton(
+                    onClick = { filePickerLauncher.launch("application/octet-stream") },
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Import Anki")
+                    // Note: Ideally use a different icon like 'FileUpload'
+                }
+                FloatingActionButton(onClick = onAddDeckClick) {
+                    Icon(Icons.Default.Add, contentDescription = "Add deck")
+                }
             }
         }
     ) { paddingValues ->

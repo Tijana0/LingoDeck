@@ -19,9 +19,9 @@ class FlashcardRepository(
         }
     }
 
-    suspend fun addDeck(name: String, frontLanguage: String = "de", backLanguage: String = "en") {
+    suspend fun addDeck(name: String, frontLanguage: String = "de", backLanguage: String = "en"): Long {
         val entity = DeckEntity(name = name, frontLanguage = frontLanguage, backLanguage = backLanguage)
-        deckDao.addDeck(entity)
+        return deckDao.addDeck(entity)
     }
 
     suspend fun deleteDeck(deck: Deck) {
