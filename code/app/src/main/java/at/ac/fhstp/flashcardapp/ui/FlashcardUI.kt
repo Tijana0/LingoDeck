@@ -15,6 +15,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -534,8 +537,22 @@ fun AddDeckScreen(onSave: (String, String, String) -> Unit) {
             // Front Language
             var expandedFront by remember { mutableStateOf(false) }
             Box(modifier = Modifier.weight(1f)) {
-                OutlinedButton(onClick = { expandedFront = true }, modifier = Modifier.fillMaxWidth()) {
-                    Text("Front: ${languages.find { it.first == frontLang }?.second}")
+                OutlinedButton(
+                    onClick = { expandedFront = true },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Front: ${languages.find { it.first == frontLang }?.second}",
+                            modifier = Modifier.weight(1f)
+                        )
+                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
+                    }
                 }
                 DropdownMenu(expanded = expandedFront, onDismissRequest = { expandedFront = false }) {
                     languages.forEach { (code, name) ->
@@ -553,8 +570,22 @@ fun AddDeckScreen(onSave: (String, String, String) -> Unit) {
             // Back Language
             var expandedBack by remember { mutableStateOf(false) }
             Box(modifier = Modifier.weight(1f)) {
-                OutlinedButton(onClick = { expandedBack = true }, modifier = Modifier.fillMaxWidth()) {
-                    Text("Back: ${languages.find { it.first == backLang }?.second}")
+                OutlinedButton(
+                    onClick = { expandedBack = true },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Back: ${languages.find { it.first == backLang }?.second}",
+                            modifier = Modifier.weight(1f)
+                        )
+                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = null)
+                    }
                 }
                 DropdownMenu(expanded = expandedBack, onDismissRequest = { expandedBack = false }) {
                     languages.forEach { (code, name) ->
