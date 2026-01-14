@@ -587,13 +587,15 @@ fun AddDeckScreen(onSave: (String, String, String) -> Unit) {
                 label = "Front",
                 selectedCode = frontLang,
                 onLanguageSelected = { frontLang = it },
-                languages = languages
+                languages = languages,
+                modifier = Modifier.weight(1f)
             )
             LanguageDropdown(
                 label = "Back",
                 selectedCode = backLang,
                 onLanguageSelected = { backLang = it },
-                languages = languages
+                languages = languages,
+                modifier = Modifier.weight(1f)
             )
         }
 
@@ -702,10 +704,11 @@ fun LanguageDropdown(
     label: String,
     selectedCode: String,
     onLanguageSelected: (String) -> Unit,
-    languages: List<Pair<String, String>>
+    languages: List<Pair<String, String>>,
+    modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
-    Box(modifier = Modifier.weight(1f)) {
+    Box(modifier = modifier) {
         OutlinedButton(
             onClick = { expanded = true },
             modifier = Modifier.fillMaxWidth(),
