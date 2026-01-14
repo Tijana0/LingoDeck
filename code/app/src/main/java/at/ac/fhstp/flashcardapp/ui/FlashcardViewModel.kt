@@ -48,6 +48,16 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
         }
     }
 
+    fun updateFlashcard(flashcard: Flashcard, newFront: String, newBack: String) {
+        viewModelScope.launch {
+            repository.updateFlashcard(flashcard.copy(front = newFront, back = newBack))
+        }
+    }
+
+    suspend fun getFlashcardById(id: Int): Flashcard? {
+        return repository.getFlashcardById(id)
+    }
+
     fun deleteFlashcard(flashcard: Flashcard) {
         viewModelScope.launch {
             repository.deleteFlashcard(flashcard)

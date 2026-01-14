@@ -16,7 +16,10 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+<<<<<<< HEAD
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+=======
+>>>>>>> task/edit-delete-cards
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -52,7 +55,8 @@ enum class Routes {
     DeckDetail,
     Review,
     AddDeck,
-    AddFlashcard
+    AddFlashcard,
+    EditFlashcard
 }
 
 @Composable
@@ -94,6 +98,12 @@ fun FlashcardApp(
                     },
                     onAddFlashcardClick = {
                         navController.navigate("${Routes.AddFlashcard.name}/$deckId")
+                    },
+                    onEditFlashcardClick = { flashcard ->
+                        navController.navigate("${Routes.EditFlashcard.name}/${flashcard.id}")
+                    },
+                    onDeleteFlashcardClick = { flashcard ->
+                        viewModel.deleteFlashcard(flashcard)
                     }
                 )
             }
@@ -137,6 +147,32 @@ fun FlashcardApp(
                         navController.popBackStack()
                     }
                 )
+            }
+            composable(
+                route = "${Routes.EditFlashcard.name}/{flashcardId}",
+                arguments = listOf(navArgument("flashcardId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val flashcardId = backStackEntry.arguments?.getInt("flashcardId") ?: 0
+                var flashcard by remember { mutableStateOf<Flashcard?>(null) }
+
+                LaunchedEffect(flashcardId) {
+                    flashcard = viewModel.getFlashcardById(flashcardId)
+                }
+
+                if (flashcard != null) {
+                    EditFlashcardScreen(
+                        initialFront = flashcard!!.front,
+                        initialBack = flashcard!!.back,
+                        onSave = { newFront, newBack ->
+                            viewModel.updateFlashcard(flashcard!!, newFront, newBack)
+                            navController.popBackStack()
+                        }
+                    )
+                } else {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
             }
         }
     }
@@ -197,60 +233,77 @@ fun DeckDetailScreen(
     dueFlashcardsCount: Int,
     chartData: List<Pair<String, Int>>,
     onStartReviewClick: () -> Unit,
-    onAddFlashcardClick: () -> Unit
-) {
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(onClick = onAddFlashcardClick) {
-                Icon(Icons.Default.Add, contentDescription = "Add flashcard")
-            }
+    onAddFlashcardClick: () -> Unit,
+        onEditFlashcardClick: (Flashcard) -> Unit,
+        onDeleteFlashcardClick: (Flashcard) -> Unit
+    ) {
+        var showDeleteDialog by remember { mutableStateOf(false) }
+        var flashcardToDelete by remember { mutableStateOf<Flashcard?>(null) }
+    
+        if (showDeleteDialog && flashcardToDelete != null) {
+            AlertDialog(
+                onDismissRequest = { showDeleteDialog = false },
+                title = { Text("Delete Flashcard") },
+                text = { Text("Are you sure you want to delete this flashcard?") },
+                                        confirmButton = {
+                                            TextButton(
+                                                onClick = {
+                                                    onDeleteFlashcardClick(flashcardToDelete!!)
+                                                    showDeleteDialog = false
+                                                },
+                                                colors = ButtonDefaults.textButtonColors(contentColor = Color.White)
+                                            ) {
+                                                Text("Delete")
+                                            }
+                                        },
+                                        dismissButton = {
+                                            TextButton(
+                                                onClick = { showDeleteDialog = false },
+                                                colors = ButtonDefaults.textButtonColors(contentColor = Color.White)
+                                            ) {
+                                                Text("Cancel")
+                                            }
+                                        }            )
         }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp)
-        ) {
-            Button(onClick = onStartReviewClick, enabled = dueFlashcardsCount > 0) {
-                Text("Start Review ($dueFlashcardsCount due)")
+    
+        Scaffold(
+            floatingActionButton = {
+                FloatingActionButton(onClick = onAddFlashcardClick) {
+                    Icon(Icons.Default.Add, contentDescription = "Add flashcard")
+                }
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Text("Upcoming Reviews:", style = MaterialTheme.typography.headlineSmall)
-            Spacer(modifier = Modifier.height(8.dp))
-            UpcomingReviewsChart(chartData)
-            Spacer(modifier = Modifier.height(16.dp))
-            Text("All Cards:", style = MaterialTheme.typography.headlineSmall)
-            Spacer(modifier = Modifier.height(8.dp))
-            LazyColumn {
-                items(flashcards) { flashcard ->
-                    val formattedDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(flashcard.dueDate))
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = flashcard.front, style = MaterialTheme.typography.bodyLarge)
-                            Text(text = flashcard.back, style = MaterialTheme.typography.bodyMedium)
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text("Due: $formattedDate", style = MaterialTheme.typography.bodySmall)
-                                Text("Interval: ${flashcard.interval}d", style = MaterialTheme.typography.bodySmall)
-                                Text("Ease: ${flashcard.easeFactor}", style = MaterialTheme.typography.bodySmall)
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(16.dp)
+            ) {
+                Button(onClick = onStartReviewClick, enabled = dueFlashcardsCount > 0) {
+                    Text("Start Review ($dueFlashcardsCount due)")
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Text("Upcoming Reviews:", style = MaterialTheme.typography.headlineSmall)
+                Spacer(modifier = Modifier.height(8.dp))
+                UpcomingReviewsChart(chartData)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text("All Cards:", style = MaterialTheme.typography.headlineSmall)
+                Spacer(modifier = Modifier.height(8.dp))
+                            LazyColumn {
+                                items(flashcards) { flashcard ->
+                                    FlashcardItem(
+                                        flashcard = flashcard,
+                                        onEditClick = { onEditFlashcardClick(flashcard) },
+                                        onDeleteClick = {
+                                            flashcardToDelete = flashcard
+                                            showDeleteDialog = true
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
                 }
-            }
-        }
-    }
-}
-
 @Composable
 fun UpcomingReviewsChart(chartData: List<Pair<String, Int>>) {
     val maxValue = chartData.maxOfOrNull { it.second } ?: 1
@@ -660,6 +713,115 @@ fun AddFlashcardScreen(onSave: (String, String) -> Unit) {
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(stringResource(R.string.save))
+        }
+    }
+}
+
+@Composable
+fun EditFlashcardScreen(
+    initialFront: String,
+    initialBack: String,
+    onSave: (String, String) -> Unit
+) {
+    var front by remember { mutableStateOf(initialFront) }
+    var back by remember { mutableStateOf(initialBack) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(text = "Edit Flashcard", style = MaterialTheme.typography.headlineMedium)
+
+        OutlinedTextField(
+            value = front,
+            onValueChange = { front = it },
+            label = { Text(stringResource(R.string.flashcard_front)) },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = back,
+            onValueChange = { back = it },
+            label = { Text(stringResource(R.string.flashcard_back)) },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Button(
+            onClick = { if (front.isNotBlank()) onSave(front, back) },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Update")
+        }
+    }
+}
+
+@Composable
+fun FlashcardItem(
+    flashcard: Flashcard,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val formattedDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date(flashcard.dueDate))
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = flashcard.front, style = MaterialTheme.typography.bodyLarge)
+                    Text(text = flashcard.back, style = MaterialTheme.typography.bodyMedium)
+                }
+                Box {
+                    IconButton(onClick = { expanded = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "More options")
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Edit") },
+                            onClick = {
+                                expanded = false
+                                onEditClick()
+                            },
+                            leadingIcon = {
+                                Icon(Icons.Default.Edit, contentDescription = null)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Delete") },
+                            onClick = {
+                                expanded = false
+                                onDeleteClick()
+                            },
+                            leadingIcon = {
+                                Icon(Icons.Default.Delete, contentDescription = null)
+                            }
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Due: $formattedDate", style = MaterialTheme.typography.bodySmall)
+                Text("Interval: ${flashcard.interval}d", style = MaterialTheme.typography.bodySmall)
+                Text("Ease: ${flashcard.easeFactor}", style = MaterialTheme.typography.bodySmall)
+            }
         }
     }
 }

@@ -87,6 +87,21 @@ class FlashcardRepository(
         flashcardDao.updateFlashcard(entity)
     }
 
+    suspend fun getFlashcardById(id: Int): Flashcard? {
+        val entity = flashcardDao.getFlashcardById(id)
+        return entity?.let {
+            Flashcard(
+                it.id,
+                it.deckId,
+                it.front,
+                it.back,
+                it.dueDate,
+                it.interval,
+                it.easeFactor
+            )
+        }
+    }
+
     suspend fun deleteFlashcard(flashcard: Flashcard) {
         val entity = FlashcardEntity(
             id = flashcard.id,
