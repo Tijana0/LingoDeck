@@ -489,7 +489,7 @@ fun ReviewScreen(
                                     }
                                 }
                             }
-                            .clickable { if (!showBack) showBack = true },
+                            .clickable { showBack = !showBack },
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                     ) {
                         Column(
@@ -524,14 +524,12 @@ fun ReviewScreen(
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    if (!showBack) {
-                        Text(text = "Tap to show answer", style = MaterialTheme.typography.bodySmall)
-                    } else {
-                        Text(text = "Swipe Left for Wrong, Right for Correct", style = MaterialTheme.typography.bodySmall)
-                    }
-                }
-            }
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Text(
+                                            text = if (!showBack) "Tap to show answer" else "Swipe to answer, Tap to flip back",
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }            }
         }
     }
 }
