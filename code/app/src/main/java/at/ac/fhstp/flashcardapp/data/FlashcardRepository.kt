@@ -65,7 +65,7 @@ class FlashcardRepository(
                     entity.interval,
                     entity.easeFactor
                 )
-            }
+            }.shuffled()
         }
     }
 
