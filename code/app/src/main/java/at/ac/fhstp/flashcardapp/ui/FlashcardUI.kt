@@ -182,6 +182,36 @@ fun DeckListScreen(
     onAddDeckClick: () -> Unit,
     onDeleteDeckClick: (Deck) -> Unit
 ) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    var deckToDelete by remember { mutableStateOf<Deck?>(null) }
+
+    if (showDeleteDialog && deckToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Delete Deck") },
+            text = { Text("Are you sure you want to delete this deck? All flashcards inside it will be lost.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDeleteDeckClick(deckToDelete!!)
+                        showDeleteDialog = false
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = Color.White)
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showDeleteDialog = false },
+                    colors = ButtonDefaults.textButtonColors(contentColor = Color.White)
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = onAddDeckClick) {
@@ -212,7 +242,10 @@ fun DeckListScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(text = deck.name, style = MaterialTheme.typography.titleMedium)
-                                IconButton(onClick = { onDeleteDeckClick(deck) }) {
+                                IconButton(onClick = {
+                                    deckToDelete = deck
+                                    showDeleteDialog = true
+                                }) {
                                     Icon(Icons.Default.Delete, contentDescription = "Delete deck", tint = MaterialTheme.colorScheme.tertiary)
                                 }
                             }
