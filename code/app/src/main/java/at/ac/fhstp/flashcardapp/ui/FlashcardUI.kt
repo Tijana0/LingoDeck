@@ -201,7 +201,7 @@ fun DeckListScreen(
     var importName by remember { mutableStateOf("") }
 
     val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = ActivityResultContracts.OpenDocument()
     ) { uri: android.net.Uri? ->
         if (uri != null) {
             selectedUri = uri
@@ -271,7 +271,7 @@ fun DeckListScreen(
         floatingActionButton = {
             Column(horizontalAlignment = Alignment.End) {
                 SmallFloatingActionButton(
-                    onClick = { filePickerLauncher.launch("application/octet-stream") },
+                    onClick = { filePickerLauncher.launch(arrayOf("*/*")) },
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     modifier = Modifier.padding(bottom = 8.dp)
                 ) {
