@@ -502,7 +502,7 @@ fun ReviewScreen(
 
                                 // Left border (wrong → red)
                                 drawLine(
-                                    color = Color.Red,
+                                    color = Color.Green,
                                     start = Offset(0f, 0f),
                                     end = Offset(0f, size.height),
                                     strokeWidth = strokeWidth
@@ -510,7 +510,7 @@ fun ReviewScreen(
 
                                 // Right border (correct → green)
                                 drawLine(
-                                    color = Color.Green,
+                                    color = Color.Red,
                                     start = Offset(size.width, 0f),
                                     end = Offset(size.width, size.height),
                                     strokeWidth = strokeWidth
