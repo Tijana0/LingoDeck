@@ -111,7 +111,6 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
             val updatedFlashcard = SpacedRepetition.processAnswer(flashcard, isCorrect)
             repository.updateFlashcard(updatedFlashcard)
             
-            // Remove from local session list
             _reviewCards.value = _reviewCards.value.filter { it.id != flashcard.id }
         }
     }

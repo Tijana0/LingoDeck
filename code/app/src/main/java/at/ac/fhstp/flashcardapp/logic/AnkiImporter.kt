@@ -21,7 +21,6 @@ class AnkiImporter(
             val tempFile = File(context.cacheDir, "collection.anki2")
             var foundDb = false
 
-            // 1. Extract collection.anki2 from ZIP
             ZipInputStream(inputStream).use { zip ->
                 var entry: ZipEntry? = zip.nextEntry
                 while (entry != null) {
@@ -40,20 +39,16 @@ class AnkiImporter(
                 throw Exception("Invalid .apkg file: collection.anki2 not found")
             }
 
-            // 2. Create Deck
             val newDeckId = repository.addDeck(deckName, "en", "en").toInt()
 
-            // 3. Read Anki DB
             val ankiDb = SQLiteDatabase.openDatabase(tempFile.path, null, SQLiteDatabase.OPEN_READONLY)
             try {
-                // Query notes. 'flds' contains fields separated by \x1f
                 val cursor = ankiDb.rawQuery("SELECT flds FROM notes", null)
                 val fldsIndex = cursor.getColumnIndex("flds")
 
                 if (fldsIndex != -1) {
                     while (cursor.moveToNext()) {
                         val flds = cursor.getString(fldsIndex)
-                        // Split by Unit Separator
                         val parts = flds.split("\u001f")
                         if (parts.size >= 2) {
                             val front = parts[0]
@@ -64,8 +59,6 @@ class AnkiImporter(
                 }
                 cursor.close()
             } catch (e: Exception) {
-                // If anything fails, maybe we should delete the empty deck?
-                // For now, just rethrow
                 throw e
             } finally {
                 ankiDb.close()

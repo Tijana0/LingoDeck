@@ -276,7 +276,6 @@ fun DeckListScreen(
                     modifier = Modifier.padding(bottom = 8.dp)
                 ) {
                     Icon(Icons.Default.Add, contentDescription = "Import Anki")
-                    // Note: Ideally use a different icon like 'FileUpload'
                 }
                 FloatingActionButton(onClick = onAddDeckClick) {
                     Icon(Icons.Default.Add, contentDescription = "Add deck")
