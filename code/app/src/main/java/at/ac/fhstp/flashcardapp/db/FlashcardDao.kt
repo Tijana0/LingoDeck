@@ -25,6 +25,9 @@ interface FlashcardDao {
     @Query("SELECT * FROM flashcards WHERE deckId = :deckId AND dueDate <= :currentDate")
     fun getDueFlashcards(deckId: Int, currentDate: Long): Flow<List<FlashcardEntity>>
 
+    @Query("SELECT * FROM flashcards WHERE deckId = :deckId AND dueDate <= :currentDate")
+    suspend fun getDueFlashcardsList(deckId: Int, currentDate: Long): List<FlashcardEntity>
+
     @Query("SELECT * FROM flashcards")
     fun getAllFlashcards(): Flow<List<FlashcardEntity>>
 

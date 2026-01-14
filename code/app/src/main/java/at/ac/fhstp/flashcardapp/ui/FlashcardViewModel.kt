@@ -21,6 +21,16 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
             initialValue = emptyList()
         )
 
+    private val _reviewCards = kotlinx.coroutines.flow.MutableStateFlow<List<Flashcard>>(emptyList())
+    val reviewCards: StateFlow<List<Flashcard>> = _reviewCards
+
+    fun startReviewSession(deckId: Int) {
+        viewModelScope.launch {
+            val cards = repository.getDueFlashcardsList(deckId)
+            _reviewCards.value = cards.shuffled()
+        }
+    }
+
     fun addDeck(name: String, frontLanguage: String, backLanguage: String, onComplete: () -> Unit) {
         viewModelScope.launch {
             repository.addDeck(name, frontLanguage, backLanguage)
@@ -86,6 +96,9 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
         viewModelScope.launch {
             val updatedFlashcard = SpacedRepetition.processAnswer(flashcard, isCorrect)
             repository.updateFlashcard(updatedFlashcard)
+            
+            // Remove from local session list
+            _reviewCards.value = _reviewCards.value.filter { it.id != flashcard.id }
         }
     }
 }

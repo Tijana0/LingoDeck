@@ -65,7 +65,21 @@ class FlashcardRepository(
                     entity.interval,
                     entity.easeFactor
                 )
-            }.shuffled()
+            }
+        }
+    }
+
+    suspend fun getDueFlashcardsList(deckId: Int): List<Flashcard> {
+        return flashcardDao.getDueFlashcardsList(deckId, System.currentTimeMillis()).map { entity ->
+            Flashcard(
+                entity.id,
+                entity.deckId,
+                entity.front,
+                entity.back,
+                entity.dueDate,
+                entity.interval,
+                entity.easeFactor
+            )
         }
     }
 

@@ -109,12 +109,17 @@ fun FlashcardApp(
                 arguments = listOf(navArgument("deckId") { type = NavType.IntType })
             ) { backStackEntry ->
                 val deckId = backStackEntry.arguments?.getInt("deckId") ?: 0
-                val dueFlashcards by viewModel.getDueFlashcards(deckId).collectAsState(initial = null)
+                
+                LaunchedEffect(deckId) {
+                    viewModel.startReviewSession(deckId)
+                }
+                
+                val reviewCards by viewModel.reviewCards.collectAsState()
                 val decks by viewModel.decks.collectAsState()
                 val deck = decks.find { it.id == deckId }
 
                 ReviewScreen(
-                    dueFlashcards = dueFlashcards,
+                    dueFlashcards = reviewCards,
                     deck = deck,
                     onAnswer = { flashcard, isCorrect ->
                         viewModel.processAnswer(flashcard, isCorrect)
