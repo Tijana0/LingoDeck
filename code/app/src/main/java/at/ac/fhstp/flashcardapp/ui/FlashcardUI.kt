@@ -346,7 +346,6 @@ fun ReviewScreen(
     onAnswer: (Flashcard, Boolean) -> Unit,
     onReviewComplete: () -> Unit
 ) {
-    var currentCardIndex by remember { mutableStateOf(0) }
     var showBack by remember { mutableStateOf(false) }
     val offset = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
@@ -379,29 +378,9 @@ fun ReviewScreen(
         }
     }
 
-    // Auto-play TTS when card changes or flips
-    if (dueFlashcards != null && currentCardIndex < dueFlashcards.size && deck != null) {
-        val flashcard = dueFlashcards[currentCardIndex]
-        LaunchedEffect(currentCardIndex, showBack, isTtsReady) {
-            if (isTtsReady) {
-                val textToSpeak = if (showBack) flashcard.back else flashcard.front
-                val lang = if (showBack) deck.backLanguage else deck.frontLanguage
-                speak(textToSpeak, lang)
-            }
-        }
-    }
-
     // Handle Empty State (No cards due)
     if (dueFlashcards != null && dueFlashcards.isEmpty()) {
         LaunchedEffect(Unit) {
-            onReviewComplete()
-        }
-    }
-
-    // Handle Completion State
-    if (dueFlashcards != null && dueFlashcards.isNotEmpty() && currentCardIndex >= dueFlashcards.size) {
-        LaunchedEffect(currentCardIndex) {
-            kotlinx.coroutines.delay(500)
             onReviewComplete()
         }
     }
@@ -421,131 +400,136 @@ fun ReviewScreen(
                 Text(text = "No cards due.")
             } else {
                 // Review State
-                if (currentCardIndex < dueFlashcards.size) {
-                    val flashcard = dueFlashcards[currentCardIndex]
+                val flashcard = dueFlashcards.first()
 
-                    // Background indicators for Swipe
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        // Right Swipe (Correct) Indicator
-                        if (offset.value > 0) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(Color.Green.copy(alpha = 0.3f)),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                Icon(
-                                    Icons.Default.Check,
-                                    contentDescription = "Correct",
-                                    modifier = Modifier.padding(start = 24.dp).size(48.dp),
-                                    tint = Color.Green
-                                )
-                            }
-                        }
-                        // Left Swipe (Wrong) Indicator
-                        if (offset.value < 0) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(Color.Red.copy(alpha = 0.3f)),
-                                contentAlignment = Alignment.CenterEnd
-                            ) {
-                                Icon(
-                                    Icons.Default.Close,
-                                    contentDescription = "Wrong",
-                                    modifier = Modifier.padding(end = 24.dp).size(48.dp),
-                                    tint = Color.Red
-                                )
-                            }
+                // Auto-play TTS when card changes or flips
+                if (deck != null) {
+                    LaunchedEffect(flashcard, showBack, isTtsReady) {
+                        if (isTtsReady) {
+                            val textToSpeak = if (showBack) flashcard.back else flashcard.front
+                            val lang = if (showBack) deck.backLanguage else deck.frontLanguage
+                            speak(textToSpeak, lang)
                         }
                     }
+                }
 
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Card(
+                // Background indicators for Swipe
+                Box(modifier = Modifier.fillMaxSize()) {
+                    // Right Swipe (Correct) Indicator
+                    if (offset.value > 0) {
+                        Box(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(250.dp)
-                                .padding(16.dp)
-                                .offset { IntOffset(offset.value.roundToInt(), 0) }
-                                .pointerInput(showBack) {
-                                    if (showBack) {
-                                        detectHorizontalDragGestures(
-                                            onDragEnd = {
-                                                scope.launch {
-                                                    if (offset.value > threshold) {
-                                                        // Swipe Right (Correct)
-                                                        offset.animateTo(screenWidth)
-                                                        onAnswer(flashcard, true)
-                                                        showBack = false
-                                                        currentCardIndex++
-                                                        offset.snapTo(0f)
-                                                    } else if (offset.value < -threshold) {
-                                                        // Swipe Left (Wrong)
-                                                        offset.animateTo(-screenWidth)
-                                                        onAnswer(flashcard, false)
-                                                        showBack = false
-                                                        currentCardIndex++
-                                                        offset.snapTo(0f)
-                                                    } else {
-                                                        offset.animateTo(0f)
-                                                    }
-                                                }
-                                            },
-                                            onDragCancel = {
-                                                scope.launch { offset.animateTo(0f) }
-                                            }
-                                        ) { change, dragAmount ->
-                                            change.consume()
-                                            scope.launch { offset.snapTo(offset.value + dragAmount) }
-                                        }
-                                    }
-                                }
-                                .clickable { if (!showBack) showBack = true },
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                                .fillMaxSize()
+                                .background(Color.Green.copy(alpha = 0.3f)),
+                            contentAlignment = Alignment.CenterStart
                         ) {
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = if (showBack) flashcard.back else flashcard.front,
-                                    style = MaterialTheme.typography.headlineMedium
-                                )
-                                Spacer(modifier = Modifier.height(24.dp))
-                                if (deck != null) {
-                                    FilledIconButton(
-                                        onClick = {
-                                            val textToSpeak = if (showBack) flashcard.back else flashcard.front
-                                            val lang = if (showBack) deck.backLanguage else deck.frontLanguage
-                                            speak(textToSpeak, lang)
+                            Icon(
+                                Icons.Default.Check,
+                                contentDescription = "Correct",
+                                modifier = Modifier.padding(start = 24.dp).size(48.dp),
+                                tint = Color.Green
+                            )
+                        }
+                    }
+                    // Left Swipe (Wrong) Indicator
+                    if (offset.value < 0) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Red.copy(alpha = 0.3f)),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "Wrong",
+                                modifier = Modifier.padding(end = 24.dp).size(48.dp),
+                                tint = Color.Red
+                            )
+                        }
+                    }
+                }
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(250.dp)
+                            .padding(16.dp)
+                            .offset { IntOffset(offset.value.roundToInt(), 0) }
+                            .pointerInput(showBack) {
+                                if (showBack) {
+                                    detectHorizontalDragGestures(
+                                        onDragEnd = {
+                                            scope.launch {
+                                                if (offset.value > threshold) {
+                                                    // Swipe Right (Correct)
+                                                    offset.animateTo(screenWidth)
+                                                    onAnswer(flashcard, true)
+                                                    showBack = false
+                                                    offset.snapTo(0f)
+                                                } else if (offset.value < -threshold) {
+                                                    // Swipe Left (Wrong)
+                                                    offset.animateTo(-screenWidth)
+                                                    onAnswer(flashcard, false)
+                                                    showBack = false
+                                                    offset.snapTo(0f)
+                                                } else {
+                                                    offset.animateTo(0f)
+                                                }
+                                            }
                                         },
-                                        modifier = Modifier.size(56.dp),
-                                        colors = IconButtonDefaults.filledIconButtonColors(
-                                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                        )
-                                    ) {
-                                        Icon(
-                                            Icons.AutoMirrored.Filled.VolumeUp,
-                                            contentDescription = "Speak",
-                                            modifier = Modifier.size(32.dp)
-                                        )
+                                        onDragCancel = {
+                                            scope.launch { offset.animateTo(0f) }
+                                        }
+                                    ) { change, dragAmount ->
+                                        change.consume()
+                                        scope.launch { offset.snapTo(offset.value + dragAmount) }
                                     }
                                 }
                             }
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        if (!showBack) {
-                            Text(text = "Tap to show answer", style = MaterialTheme.typography.bodySmall)
-                        } else {
-                            Text(text = "Swipe Left for Wrong, Right for Correct", style = MaterialTheme.typography.bodySmall)
+                            .clickable { if (!showBack) showBack = true },
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = if (showBack) flashcard.back else flashcard.front,
+                                style = MaterialTheme.typography.headlineMedium
+                            )
+                            Spacer(modifier = Modifier.height(24.dp))
+                            if (deck != null) {
+                                FilledIconButton(
+                                    onClick = {
+                                        val textToSpeak = if (showBack) flashcard.back else flashcard.front
+                                        val lang = if (showBack) deck.backLanguage else deck.frontLanguage
+                                        speak(textToSpeak, lang)
+                                    },
+                                    modifier = Modifier.size(56.dp),
+                                    colors = IconButtonDefaults.filledIconButtonColors(
+                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                ) {
+                                    Icon(
+                                        Icons.AutoMirrored.Filled.VolumeUp,
+                                        contentDescription = "Speak",
+                                        modifier = Modifier.size(32.dp)
+                                    )
+                                }
+                            }
                         }
                     }
-                } else {
-                    Text(text = "Review Complete!")
+                    Spacer(modifier = Modifier.height(16.dp))
+                    if (!showBack) {
+                        Text(text = "Tap to show answer", style = MaterialTheme.typography.bodySmall)
+                    } else {
+                        Text(text = "Swipe Left for Wrong, Right for Correct", style = MaterialTheme.typography.bodySmall)
+                    }
                 }
             }
         }
