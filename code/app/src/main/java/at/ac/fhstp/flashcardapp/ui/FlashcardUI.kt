@@ -556,20 +556,27 @@ fun ReviewScreen(
                             .height(250.dp)
                             .drawBehind {
                                 val strokeWidth = 8.dp.toPx()
-                                // Left border (Green)
-                                drawLine(
-                                    color = Color.Green,
-                                    start = Offset(0f, 0f),
-                                    end = Offset(0f, size.height),
-                                    strokeWidth = strokeWidth
-                                )
-                                // Right border (Red)
-                                drawLine(
-                                    color = Color.Red,
-                                    start = Offset(size.width, 0f),
-                                    end = Offset(size.width, size.height),
-                                    strokeWidth = strokeWidth
-                                )
+                                val currentOffset = offset.value
+
+                                // Left border (Red/Wrong) - Hide if swiping Right (offset > 0) -> Correct
+                                if (currentOffset <= 0) {
+                                    drawLine(
+                                        color = Color.Red,
+                                        start = Offset(0f, 0f),
+                                        end = Offset(0f, size.height),
+                                        strokeWidth = strokeWidth
+                                    )
+                                }
+
+                                // Right border (Green/Correct) - Hide if swiping Left (offset < 0) -> Wrong
+                                if (currentOffset >= 0) {
+                                    drawLine(
+                                        color = Color.Green,
+                                        start = Offset(size.width, 0f),
+                                        end = Offset(size.width, size.height),
+                                        strokeWidth = strokeWidth
+                                    )
+                                }
                             }
                             .padding(16.dp)
                             .offset { IntOffset(offset.value.roundToInt(), 0) }
@@ -641,8 +648,9 @@ fun ReviewScreen(
                     }
                                         Spacer(modifier = Modifier.height(16.dp))
                                         Text(
-                                            text = if (!showBack) "Tap to show answer" else "Swipe to answer, Tap to flip back",
-                                            style = MaterialTheme.typography.bodySmall
+                                            text = if (!showBack) "Tap to show answer" else "Swipe right for correct, left for incorrect,\nTap to flip back",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
                                         )
                                     }            }
         }
