@@ -48,8 +48,6 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
-import androidx.compose.ui.draw.drawBehind
-
 
 enum class Routes {
     DeckList,
@@ -203,7 +201,7 @@ fun DeckListScreen(
     var importName by remember { mutableStateOf("") }
 
     val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = ActivityResultContracts.OpenDocument()
     ) { uri: android.net.Uri? ->
         if (uri != null) {
             selectedUri = uri
@@ -273,7 +271,7 @@ fun DeckListScreen(
         floatingActionButton = {
             Column(horizontalAlignment = Alignment.End) {
                 SmallFloatingActionButton(
-                    onClick = { filePickerLauncher.launch("application/octet-stream") },
+                    onClick = { filePickerLauncher.launch(arrayOf("*/*")) },
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     modifier = Modifier.padding(bottom = 8.dp)
                 ) {
@@ -555,26 +553,6 @@ fun ReviewScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(250.dp)
-                            // ✅ INSIDE borders
-                            .drawBehind {
-                                val strokeWidth = 8.dp.toPx()
-
-                                // Left border (wrong → red)
-                                drawLine(
-                                    color = Color.Green,
-                                    start = Offset(0f, 0f),
-                                    end = Offset(0f, size.height),
-                                    strokeWidth = strokeWidth
-                                )
-
-                                // Right border (correct → green)
-                                drawLine(
-                                    color = Color.Red,
-                                    start = Offset(size.width, 0f),
-                                    end = Offset(size.width, size.height),
-                                    strokeWidth = strokeWidth
-                                )
-                            }
                             .padding(16.dp)
                             .offset { IntOffset(offset.value.roundToInt(), 0) }
                             .pointerInput(showBack) {
@@ -763,11 +741,8 @@ fun FlashcardItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
-
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
