@@ -553,6 +553,23 @@ fun ReviewScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(250.dp)
+                            .drawBehind {
+                                val strokeWidth = 8.dp.toPx()
+                                // Left border (Green)
+                                drawLine(
+                                    color = Color.Green,
+                                    start = Offset(0f, 0f),
+                                    end = Offset(0f, size.height),
+                                    strokeWidth = strokeWidth
+                                )
+                                // Right border (Red)
+                                drawLine(
+                                    color = Color.Red,
+                                    start = Offset(size.width, 0f),
+                                    end = Offset(size.width, size.height),
+                                    strokeWidth = strokeWidth
+                                )
+                            }
                             .padding(16.dp)
                             .offset { IntOffset(offset.value.roundToInt(), 0) }
                             .pointerInput(showBack) {
