@@ -14,6 +14,5 @@ object AppViewModelProvider {
     }
 }
 
-// Extension function to get the Application object
 fun CreationExtras.flashcardApplication(): FlashcardApplication =
     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as FlashcardApplication)

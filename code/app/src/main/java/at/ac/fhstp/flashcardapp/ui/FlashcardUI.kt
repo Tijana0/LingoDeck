@@ -18,8 +18,10 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -206,7 +208,7 @@ fun DeckListScreen(
     ) { uri: android.net.Uri? ->
         if (uri != null) {
             selectedUri = uri
-            importName = "Imported Anki Deck" // Default name
+            importName = "Imported Anki Deck"
             showImportNameDialog = true
         }
     }
@@ -241,7 +243,6 @@ fun DeckListScreen(
     }
 
     if (showDeleteDialog && deckToDelete != null) {
-        // ... (previous delete dialog code)
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
             title = { Text("Delete Deck") },
@@ -269,18 +270,26 @@ fun DeckListScreen(
     }
 
     Scaffold(
-        floatingActionButton = {
-            Column(horizontalAlignment = Alignment.End) {
-                SmallFloatingActionButton(
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 20.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                ExtendedFloatingActionButton(
                     onClick = { filePickerLauncher.launch(arrayOf("*/*")) },
+                    icon = { Icon(Icons.Default.FileOpen, contentDescription = "Import") },
+                    text = { Text("Import Anki") },
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Import Anki")
-                }
-                FloatingActionButton(onClick = onAddDeckClick) {
-                    Icon(Icons.Default.Add, contentDescription = "Add deck")
-                }
+                    modifier = Modifier.weight(1f)
+                )
+                ExtendedFloatingActionButton(
+                    onClick = onAddDeckClick,
+                    icon = { Icon(Icons.Default.Add, contentDescription = "Add") },
+                    text = { Text("New Deck") },
+                    modifier = Modifier.weight(1f)
+                )
             }
         }
     ) { paddingValues ->
@@ -490,62 +499,55 @@ fun ReviewScreen(
                 .padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
-            if (dueFlashcards == null) {
-                // Loading State
-                CircularProgressIndicator()
-            } else if (dueFlashcards.isEmpty()) {
-                // Empty State
-                Text(text = "No cards due.")
-            } else {
-                // Review State
-                val flashcard = dueFlashcards.first()
+    if (dueFlashcards == null) {
+        CircularProgressIndicator()
+    } else if (dueFlashcards.isEmpty()) {
+        Text(text = "No cards due.")
+    } else {
+        val flashcard = dueFlashcards.first()
 
-                // Auto-play TTS when card changes or flips
-                if (deck != null) {
-                    LaunchedEffect(flashcard, showBack, isTtsReady) {
-                        if (isTtsReady) {
-                            val textToSpeak = if (showBack) flashcard.back else flashcard.front
-                            val lang = if (showBack) deck.backLanguage else deck.frontLanguage
-                            speak(textToSpeak, lang)
-                        }
-                    }
+        if (deck != null) {
+            LaunchedEffect(flashcard, showBack, isTtsReady) {
+                if (isTtsReady) {
+                    val textToSpeak = if (showBack) flashcard.back else flashcard.front
+                    val lang = if (showBack) deck.backLanguage else deck.frontLanguage
+                    speak(textToSpeak, lang)
                 }
+            }
+        }
 
-                // Background indicators for Swipe
-                Box(modifier = Modifier.fillMaxSize()) {
-                    // Right Swipe (Correct) Indicator
-                    if (offset.value > 0) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.Green.copy(alpha = 0.3f)),
-                            contentAlignment = Alignment.CenterStart
-                        ) {
-                            Icon(
-                                Icons.Default.Check,
-                                contentDescription = "Correct",
-                                modifier = Modifier.padding(start = 24.dp).size(48.dp),
-                                tint = Color.Green
-                            )
-                        }
-                    }
-                    // Left Swipe (Wrong) Indicator
-                    if (offset.value < 0) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.Red.copy(alpha = 0.3f)),
-                            contentAlignment = Alignment.CenterEnd
-                        ) {
-                            Icon(
-                                Icons.Default.Close,
-                                contentDescription = "Wrong",
-                                modifier = Modifier.padding(end = 24.dp).size(48.dp),
-                                tint = Color.Red
-                            )
-                        }
-                    }
+        Box(modifier = Modifier.fillMaxSize()) {
+            if (offset.value > 0) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Green.copy(alpha = 0.3f)),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Icon(
+                        Icons.Default.Check,
+                        contentDescription = "Correct",
+                        modifier = Modifier.padding(start = 24.dp).size(48.dp),
+                        tint = Color.Green
+                    )
                 }
+            }
+            if (offset.value < 0) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Red.copy(alpha = 0.3f)),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = "Wrong",
+                        modifier = Modifier.padding(end = 24.dp).size(48.dp),
+                        tint = Color.Red
+                    )
+                }
+            }
+        }
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -558,7 +560,6 @@ fun ReviewScreen(
                                 val strokeWidth = 8.dp.toPx()
                                 val currentOffset = offset.value
 
-                                // Left border (Red/Wrong) - Hide if swiping Right (offset > 0) -> Correct
                                 if (currentOffset <= 0) {
                                     drawLine(
                                         color = Color.Red,
@@ -568,7 +569,6 @@ fun ReviewScreen(
                                     )
                                 }
 
-                                // Right border (Green/Correct) - Hide if swiping Left (offset < 0) -> Wrong
                                 if (currentOffset >= 0) {
                                     drawLine(
                                         color = Color.Green,

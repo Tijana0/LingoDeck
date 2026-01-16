@@ -12,7 +12,6 @@ class FlashcardRepository(
     private val deckDao: DeckDao
 ) {
 
-    // Deck methods
     val allDecks: Flow<List<Deck>> = deckDao.getAllDecks().map { entities ->
         entities.map { entity ->
             Deck(entity.id, entity.name, entity.frontLanguage, entity.backLanguage)
@@ -30,13 +29,9 @@ class FlashcardRepository(
     }
 
     suspend fun getDeckById(deckId: Int): Deck? {
-        // Since we don't have a direct getDeckById in Dao, we could add it or filter allDecks.
-        // For simplicity, let's assume we might need to fetch a single deck's metadata.
-        // Let's add it to Dao later if needed. For now we will get it from the list in VM.
         return null 
     }
 
-    // Flashcard methods
     fun getFlashcardsForDeck(deckId: Int): Flow<List<Flashcard>> {
         return flashcardDao.getFlashcardsForDeck(deckId).map { entities ->
             entities.map { entity ->
