@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -370,31 +371,66 @@ fun DeckDetailScreen(
                                         }            )
         }
     
-        Scaffold(
-            floatingActionButton = {
-                FloatingActionButton(onClick = onAddFlashcardClick) {
-                    Icon(Icons.Default.Add, contentDescription = "Add flashcard")
-                }
-            }
-        ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .padding(16.dp)
-            ) {
-                Button(onClick = onStartReviewClick, enabled = dueFlashcardsCount > 0) {
-                    Text("Start Review ($dueFlashcardsCount due)")
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("Upcoming Reviews:", style = MaterialTheme.typography.headlineSmall)
-                Spacer(modifier = Modifier.height(8.dp))
-                UpcomingReviewsChart(chartData)
-                Spacer(modifier = Modifier.height(16.dp))
-                Text("All Cards:", style = MaterialTheme.typography.headlineSmall)
-                Spacer(modifier = Modifier.height(8.dp))
-                            LazyColumn {
-                                items(flashcards) { flashcard ->
+                Scaffold(
+    
+                    bottomBar = {
+    
+                        Row(
+    
+                            modifier = Modifier
+    
+                                .fillMaxWidth()
+    
+                                .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 20.dp),
+    
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+    
+                        ) {
+    
+                            if (dueFlashcardsCount > 0) {
+    
+                                ExtendedFloatingActionButton(
+    
+                                    onClick = onStartReviewClick,
+    
+                                    modifier = Modifier.weight(1f),
+    
+                                    icon = { Icon(Icons.Default.PlayArrow, contentDescription = null) },
+    
+                                    text = { Text("Start Review ($dueFlashcardsCount)") }
+    
+                                )
+    
+                            } else {
+    
+                                Spacer(modifier = Modifier.weight(1f))
+    
+                            }
+    
+                            FloatingActionButton(onClick = onAddFlashcardClick) {
+    
+                                Icon(Icons.Default.Add, contentDescription = "Add flashcard")
+    
+                            }
+    
+                        }
+    
+                    }
+    
+                ) { paddingValues ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .padding(16.dp)
+                ) {
+                    Text("Upcoming Reviews:", style = MaterialTheme.typography.headlineSmall)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    UpcomingReviewsChart(chartData)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text("All Cards:", style = MaterialTheme.typography.headlineSmall)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LazyColumn {                                items(flashcards) { flashcard ->
                                     FlashcardItem(
                                         flashcard = flashcard,
                                         onEditClick = { onEditFlashcardClick(flashcard) },
