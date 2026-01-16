@@ -502,6 +502,10 @@ fun ReviewScreen(
     var tts by remember { mutableStateOf<TextToSpeech?>(null) }
     var isTtsReady by remember { mutableStateOf(false) }
 
+    var sessionCorrect by remember { mutableIntStateOf(0) }
+    var sessionIncorrect by remember { mutableIntStateOf(0) }
+    var hasProcessedCards by remember { mutableStateOf(false) }
+
     DisposableEffect(context) {
         val ttsInstance = TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
@@ -522,8 +526,16 @@ fun ReviewScreen(
         }
     }
 
-    // Handle Empty State (No cards due)
-    if (dueFlashcards != null && dueFlashcards.isEmpty()) {
+    if (dueFlashcards != null && dueFlashcards.isEmpty() && hasProcessedCards) {
+        ReviewSummaryScreen(
+            correct = sessionCorrect,
+            incorrect = sessionIncorrect,
+            onBackToDeck = onReviewComplete
+        )
+        return
+    }
+
+    if (dueFlashcards != null && dueFlashcards.isEmpty() && !hasProcessedCards) {
         LaunchedEffect(Unit) {
             onReviewComplete()
         }
@@ -536,55 +548,55 @@ fun ReviewScreen(
                 .padding(paddingValues),
             contentAlignment = Alignment.Center
         ) {
-    if (dueFlashcards == null) {
-        CircularProgressIndicator()
-    } else if (dueFlashcards.isEmpty()) {
-        Text(text = "No cards due.")
-    } else {
-        val flashcard = dueFlashcards.first()
+            if (dueFlashcards == null) {
+                CircularProgressIndicator()
+            } else if (dueFlashcards.isEmpty()) {
+                Text(text = "No cards due.")
+            } else {
+                val flashcard = dueFlashcards.first()
 
-        if (deck != null) {
-            LaunchedEffect(flashcard, showBack, isTtsReady) {
-                if (isTtsReady) {
-                    val textToSpeak = if (showBack) flashcard.back else flashcard.front
-                    val lang = if (showBack) deck.backLanguage else deck.frontLanguage
-                    speak(textToSpeak, lang)
+                if (deck != null) {
+                    LaunchedEffect(flashcard, showBack, isTtsReady) {
+                        if (isTtsReady) {
+                            val textToSpeak = if (showBack) flashcard.back else flashcard.front
+                            val lang = if (showBack) deck.backLanguage else deck.frontLanguage
+                            speak(textToSpeak, lang)
+                        }
+                    }
                 }
-            }
-        }
 
-        Box(modifier = Modifier.fillMaxSize()) {
-            if (offset.value > 0) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Green.copy(alpha = 0.3f)),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Icon(
-                        Icons.Default.Check,
-                        contentDescription = "Correct",
-                        modifier = Modifier.padding(start = 24.dp).size(48.dp),
-                        tint = Color.Green
-                    )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    if (offset.value > 0) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Green.copy(alpha = 0.3f)),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            Icon(
+                                Icons.Default.Check,
+                                contentDescription = "Correct",
+                                modifier = Modifier.padding(start = 24.dp).size(48.dp),
+                                tint = Color.Green
+                            )
+                        }
+                    }
+                    if (offset.value < 0) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Red.copy(alpha = 0.3f)),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "Wrong",
+                                modifier = Modifier.padding(end = 24.dp).size(48.dp),
+                                tint = Color.Red
+                            )
+                        }
+                    }
                 }
-            }
-            if (offset.value < 0) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Red.copy(alpha = 0.3f)),
-                    contentAlignment = Alignment.CenterEnd
-                ) {
-                    Icon(
-                        Icons.Default.Close,
-                        contentDescription = "Wrong",
-                        modifier = Modifier.padding(end = 24.dp).size(48.dp),
-                        tint = Color.Red
-                    )
-                }
-            }
-        }
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -623,12 +635,16 @@ fun ReviewScreen(
                                         onDragEnd = {
                                             scope.launch {
                                                 if (offset.value > threshold) {
+                                                    sessionCorrect++
+                                                    hasProcessedCards = true
                                                     // Swipe Right (Correct)
                                                     offset.animateTo(screenWidth)
                                                     onAnswer(flashcard, true)
                                                     showBack = false
                                                     offset.snapTo(0f)
                                                 } else if (offset.value < -threshold) {
+                                                    sessionIncorrect++
+                                                    hasProcessedCards = true
                                                     // Swipe Left (Wrong)
                                                     offset.animateTo(-screenWidth)
                                                     onAnswer(flashcard, false)
@@ -941,5 +957,85 @@ fun FlashcardForm(
         ) {
             Text(buttonText)
         }
+    }
+}
+
+@Composable
+fun ReviewSummaryScreen(
+    correct: Int,
+    incorrect: Int,
+    onBackToDeck: () -> Unit
+) {
+    val total = correct + incorrect
+    val percentage = if (total > 0) (correct.toFloat() / total * 100).toInt() else 0
+
+    val message = remember(percentage) {
+        val highMessages = listOf(
+            "Outstanding work!",
+            "You crushed it!",
+            "Impressive mastery!",
+            "Sharp memory!"
+        )
+        val mediumMessages = listOf(
+            "Good job, keep it up!",
+            "Solid progress!",
+            "Getting there!",
+            "Nice effort!"
+        )
+        val lowMessages = listOf(
+            "Practice makes perfect.",
+            "Keep studying, you'll get it!",
+            "Don't give up!",
+            "Every mistake is a lesson."
+        )
+
+        when {
+            percentage >= 80 -> highMessages.random()
+            percentage >= 50 -> mediumMessages.random()
+            else -> lowMessages.random()
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(text = "Session Complete", style = MaterialTheme.typography.headlineLarge)
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        Text(text = "$percentage%", style = MaterialTheme.typography.displayLarge, color = MaterialTheme.colorScheme.primary)
+        Text(text = "Accuracy", style = MaterialTheme.typography.labelLarge)
+        
+        Spacer(modifier = Modifier.height(32.dp))
+        
+        Text(text = message, style = MaterialTheme.typography.headlineSmall, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+        
+        Spacer(modifier = Modifier.height(32.dp))
+        
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "$correct", style = MaterialTheme.typography.headlineMedium, color = Color.Green)
+                Text(text = "Correct", style = MaterialTheme.typography.bodyMedium)
+            }
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "$incorrect", style = MaterialTheme.typography.headlineMedium, color = Color.Red)
+                Text(text = "Incorrect", style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(48.dp))
+        
+        ExtendedFloatingActionButton(
+            onClick = onBackToDeck,
+            modifier = Modifier.fillMaxWidth(),
+            icon = { Icon(Icons.Default.Check, contentDescription = null) },
+            text = { Text("Back to Deck") }
+        )
     }
 }
