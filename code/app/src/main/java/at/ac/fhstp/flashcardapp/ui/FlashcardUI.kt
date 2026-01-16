@@ -394,11 +394,14 @@ fun DeckDetailScreen(
             ) {
                 if (flashcards.isNotEmpty()) {
                     val isReview = dueFlashcardsCount > 0
+                    val count = if (isReview) minOf(dueFlashcardsCount, 20) else minOf(flashcards.size, 20)
+                    val label = if (isReview) "Start Review ($count)" else "Practice ($count)"
+                    
                     ExtendedFloatingActionButton(
                         onClick = if (isReview) onStartReviewClick else onStartPracticeClick,
                         modifier = Modifier.weight(1f),
                         icon = { Icon(Icons.Default.PlayArrow, contentDescription = null) },
-                        text = { Text(if (isReview) "Start Review ($dueFlashcardsCount due)" else "Practice All Cards") }
+                        text = { Text(label) }
                     )
                 } else {
                     Spacer(modifier = Modifier.weight(1f))
@@ -553,6 +556,17 @@ fun ReviewScreen(
             } else if (dueFlashcards.isEmpty()) {
                 Text(text = "No cards due.")
             } else {
+                val currentCount = sessionCorrect + sessionIncorrect + 1
+                val totalCount = dueFlashcards.size + sessionCorrect + sessionIncorrect
+                Text(
+                    text = "$currentCount / $totalCount",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp)
+                )
+
                 val flashcard = dueFlashcards.first()
 
                 if (deck != null) {

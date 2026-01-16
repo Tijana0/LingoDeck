@@ -28,14 +28,14 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
     fun startReviewSession(deckId: Int) {
         viewModelScope.launch {
             val cards = repository.getDueFlashcardsList(deckId)
-            _reviewCards.value = cards.shuffled()
+            _reviewCards.value = cards.shuffled().take(20)
         }
     }
 
     fun startPracticeSession(deckId: Int) {
         viewModelScope.launch {
             val cards = repository.getFlashcardsForDeckList(deckId)
-            _reviewCards.value = cards.shuffled()
+            _reviewCards.value = cards.shuffled().take(20)
         }
     }
 
