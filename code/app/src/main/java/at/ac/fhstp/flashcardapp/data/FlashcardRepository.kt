@@ -48,6 +48,20 @@ class FlashcardRepository(
         }
     }
 
+    suspend fun getFlashcardsForDeckList(deckId: Int): List<Flashcard> {
+        return flashcardDao.getFlashcardsForDeckList(deckId).map { entity ->
+            Flashcard(
+                entity.id,
+                entity.deckId,
+                entity.front,
+                entity.back,
+                entity.dueDate,
+                entity.interval,
+                entity.easeFactor
+            )
+        }
+    }
+
     fun getDueFlashcards(deckId: Int): Flow<List<Flashcard>> {
         return flashcardDao.getDueFlashcards(deckId, System.currentTimeMillis()).map { entities ->
             entities.map { entity ->

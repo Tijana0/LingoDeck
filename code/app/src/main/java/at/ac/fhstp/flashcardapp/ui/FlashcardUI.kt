@@ -101,7 +101,10 @@ fun FlashcardApp(
                     dueFlashcardsCount = dueFlashcards.size,
                     chartData = chartData,
                     onStartReviewClick = {
-                        navController.navigate("${Routes.Review.name}/$deckId")
+                        navController.navigate("${Routes.Review.name}/$deckId?practice=false")
+                    },
+                    onStartPracticeClick = {
+                        navController.navigate("${Routes.Review.name}/$deckId?practice=true")
                     },
                     onAddFlashcardClick = {
                         navController.navigate("${Routes.AddFlashcard.name}/$deckId")
@@ -115,13 +118,21 @@ fun FlashcardApp(
                 )
             }
             composable(
-                route = "${Routes.Review.name}/{deckId}",
-                arguments = listOf(navArgument("deckId") { type = NavType.IntType })
+                route = "${Routes.Review.name}/{deckId}?practice={practice}",
+                arguments = listOf(
+                    navArgument("deckId") { type = NavType.IntType },
+                    navArgument("practice") { type = NavType.BoolType; defaultValue = false }
+                )
             ) { backStackEntry ->
                 val deckId = backStackEntry.arguments?.getInt("deckId") ?: 0
+                val isPractice = backStackEntry.arguments?.getBoolean("practice") ?: false
                 
-                LaunchedEffect(deckId) {
-                    viewModel.startReviewSession(deckId)
+                LaunchedEffect(deckId, isPractice) {
+                    if (isPractice) {
+                        viewModel.startPracticeSession(deckId)
+                    } else {
+                        viewModel.startReviewSession(deckId)
+                    }
                 }
                 
                 val reviewCards by viewModel.reviewCards.collectAsState()
@@ -338,11 +349,12 @@ fun DeckDetailScreen(
     dueFlashcardsCount: Int,
     chartData: List<Pair<String, Int>>,
     onStartReviewClick: () -> Unit,
+    onStartPracticeClick: () -> Unit,
     onAddFlashcardClick: () -> Unit,
-        onEditFlashcardClick: (Flashcard) -> Unit,
-        onDeleteFlashcardClick: (Flashcard) -> Unit
-    ) {
-        var showDeleteDialog by remember { mutableStateOf(false) }
+    onEditFlashcardClick: (Flashcard) -> Unit,
+    onDeleteFlashcardClick: (Flashcard) -> Unit
+) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
         var flashcardToDelete by remember { mutableStateOf<Flashcard?>(null) }
     
         if (showDeleteDialog && flashcardToDelete != null) {
@@ -373,49 +385,19 @@ fun DeckDetailScreen(
     
                 Scaffold(
     
-                    bottomBar = {
-    
-                        Row(
-    
-                            modifier = Modifier
-    
-                                .fillMaxWidth()
-    
-                                .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 20.dp),
-    
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-    
-                        ) {
-    
-                            if (dueFlashcardsCount > 0) {
-    
-                                ExtendedFloatingActionButton(
-    
-                                    onClick = onStartReviewClick,
-    
-                                    modifier = Modifier.weight(1f),
-    
-                                    icon = { Icon(Icons.Default.PlayArrow, contentDescription = null) },
-    
-                                    text = { Text("Start Review ($dueFlashcardsCount)") }
-    
-                                )
-    
-                            } else {
-    
-                                Spacer(modifier = Modifier.weight(1f))
-    
-                            }
-    
-                            FloatingActionButton(onClick = onAddFlashcardClick) {
-    
-                                Icon(Icons.Default.Add, contentDescription = "Add flashcard")
-    
-                            }
-    
-                        }
-    
-                    }
+        bottomBar = {
+            if (flashcards.isNotEmpty()) {
+                val isReview = dueFlashcardsCount > 0
+                ExtendedFloatingActionButton(
+                    onClick = if (isReview) onStartReviewClick else onStartPracticeClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 20.dp),
+                    icon = { Icon(Icons.Default.PlayArrow, contentDescription = null) },
+                    text = { Text(if (isReview) "Start Review ($dueFlashcardsCount due)" else "Practice All Cards") }
+                )
+            }
+        }
     
                 ) { paddingValues ->
                 Column(

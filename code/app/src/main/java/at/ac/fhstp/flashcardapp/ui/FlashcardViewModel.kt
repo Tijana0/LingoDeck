@@ -32,6 +32,13 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
         }
     }
 
+    fun startPracticeSession(deckId: Int) {
+        viewModelScope.launch {
+            val cards = repository.getFlashcardsForDeckList(deckId)
+            _reviewCards.value = cards.shuffled()
+        }
+    }
+
     fun importAnkiDeck(context: android.content.Context, uri: android.net.Uri, deckName: String) {
         viewModelScope.launch {
             try {
