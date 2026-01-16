@@ -91,19 +91,25 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
     fun getUpcomingReviewsChartData(flashcards: List<Flashcard>): List<Pair<String, Int>> {
         val formatter = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
         val labelFormatter = java.text.SimpleDateFormat("EEE", java.util.Locale.getDefault())
-        val now = System.currentTimeMillis()
+        val calendar = java.util.Calendar.getInstance()
 
-        return flashcards
-            .filter { it.dueDate > now }
+        val groupedCards = flashcards
             .groupBy { formatter.format(java.util.Date(it.dueDate)) }
             .mapValues { it.value.size }
-            .entries
-            .sortedBy { it.key }
-            .take(7)
-            .map { (dateString, count) ->
-                val date = formatter.parse(dateString) ?: java.util.Date()
-                Pair(labelFormatter.format(date), count)
-            }
+
+        val result = mutableListOf<Pair<String, Int>>()
+
+        for (i in 0 until 7) {
+            val date = calendar.time
+            val dateString = formatter.format(date)
+            val count = groupedCards[dateString] ?: 0
+            val label = labelFormatter.format(date)
+
+            result.add(Pair(label, count))
+            calendar.add(java.util.Calendar.DAY_OF_YEAR, 1)
+        }
+
+        return result
     }
 
     fun processAnswer(flashcard: Flashcard, isCorrect: Boolean) {
