@@ -386,16 +386,26 @@ fun DeckDetailScreen(
                 Scaffold(
     
         bottomBar = {
-            if (flashcards.isNotEmpty()) {
-                val isReview = dueFlashcardsCount > 0
-                ExtendedFloatingActionButton(
-                    onClick = if (isReview) onStartReviewClick else onStartPracticeClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 20.dp),
-                    icon = { Icon(Icons.Default.PlayArrow, contentDescription = null) },
-                    text = { Text(if (isReview) "Start Review ($dueFlashcardsCount due)" else "Practice All Cards") }
-                )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 20.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if (flashcards.isNotEmpty()) {
+                    val isReview = dueFlashcardsCount > 0
+                    ExtendedFloatingActionButton(
+                        onClick = if (isReview) onStartReviewClick else onStartPracticeClick,
+                        modifier = Modifier.weight(1f),
+                        icon = { Icon(Icons.Default.PlayArrow, contentDescription = null) },
+                        text = { Text(if (isReview) "Start Review ($dueFlashcardsCount due)" else "Practice All Cards") }
+                    )
+                } else {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+                FloatingActionButton(onClick = onAddFlashcardClick) {
+                    Icon(Icons.Default.Add, contentDescription = "Add flashcard")
+                }
             }
         }
     
@@ -404,15 +414,24 @@ fun DeckDetailScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
-                        .padding(16.dp)
                 ) {
-                    Text("Upcoming Reviews:", style = MaterialTheme.typography.headlineSmall)
+                    Text(
+                        text = "Upcoming Reviews:",
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
-                    UpcomingReviewsChart(chartData)
+                    Box(modifier = Modifier.padding(horizontal = 16.dp)) {
+                        UpcomingReviewsChart(chartData)
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text("All Cards:", style = MaterialTheme.typography.headlineSmall)
+                    Text(
+                        text = "All Cards:",
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
                     Spacer(modifier = Modifier.height(8.dp))
-                    LazyColumn {                                items(flashcards) { flashcard ->
+                    LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp)) {                                items(flashcards) { flashcard ->
                                     FlashcardItem(
                                         flashcard = flashcard,
                                         onEditClick = { onEditFlashcardClick(flashcard) },
