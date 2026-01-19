@@ -4,6 +4,7 @@ import android.speech.tts.TextToSpeech
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -11,9 +12,11 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -52,6 +55,8 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.roundToInt
+import androidx.compose.ui.graphics.Brush
+
 
 enum class Routes {
     DeckList,
@@ -305,56 +310,142 @@ fun DeckListScreen(
             }
         }
     ) { paddingValues ->
-        Column(modifier = Modifier.padding(paddingValues)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
 
-            // 🔹 APP TITLE
-            Text(
-                text = "LingoDeck",
-                style = MaterialTheme.typography.headlineLarge,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-            )
+            //GRADIENT HEADER
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color(0xFF5A4BFF), // blue
+                                Color(0xFF8B3DFF)  // purple
+                            )
+                        )
+                    )
+                    .padding(horizontal = 20.dp, vertical = 24.dp)
+            ) {
+                Column {
+                    Text(
+                        text = "LingoDeck",
+                        style = MaterialTheme.typography.headlineLarge,
+                        color = Color.White
+                    )
 
-            // 🔹 SUBTITLE
-            Text(
-                text = "Your language decks for smarter learning",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
-            )
+                    Spacer(modifier = Modifier.height(6.dp))
 
+                    Text(
+                        text = "Your language decks for smarter learning",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White.copy(alpha = 0.9f)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+// CONTENT
             if (decks.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
                     Text(text = "No decks available")
                 }
             } else {
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 16.dp)
+                ) {
                     items(decks) { deck ->
+
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(8.dp)
+                                .padding(horizontal = 16.dp, vertical = 10.dp)
                                 .clickable { onDeckClick(deck) },
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                            shape = RoundedCornerShape(22.dp),
+                            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.08f))
                         ) {
-                            Row(
+                            Box(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                    .background(
+                                        Brush.linearGradient(
+                                            listOf(
+                                                Color(0xFF1E293B),
+                                                Color(0xFF0F172A)
+                                            )
+                                        )
+                                    )
+                                    .padding(16.dp)
                             ) {
-                                Text(text = deck.name, style = MaterialTheme.typography.titleMedium)
-                                IconButton(onClick = {
-                                    deckToDelete = deck
-                                    showDeleteDialog = true
-                                }) {
-                                    Icon(Icons.Default.Delete, contentDescription = "Delete deck", tint = MaterialTheme.colorScheme.tertiary)
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+
+                                    // LEFT SIDE
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+
+                                        // Icon bubble
+                                        Box(
+                                            modifier = Modifier
+                                                .size(48.dp)
+                                                .background(
+                                                    Brush.linearGradient(
+                                                        listOf(
+                                                            Color(0xFF6D5CFF),
+                                                            Color(0xFF8B5CF6)
+                                                        )
+                                                    ),
+                                                    RoundedCornerShape(14.dp)
+                                                ),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Book,
+                                                contentDescription = null,
+                                                tint = Color.White
+                                            )
+                                        }
+
+                                        Spacer(modifier = Modifier.width(12.dp))
+
+                                        Text(
+                                            text = deck.name,
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = Color.White
+                                        )
+                                    }
+
+                                    // DELETE BUTTON
+                                    IconButton(
+                                        onClick = {
+                                            deckToDelete = deck
+                                            showDeleteDialog = true
+                                        }
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Delete,
+                                            contentDescription = "Delete deck",
+                                            tint = Color(0xFFFF6B6B)
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+
+
         }
     }
 }
