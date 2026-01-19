@@ -306,6 +306,22 @@ fun DeckListScreen(
         }
     ) { paddingValues ->
         Column(modifier = Modifier.padding(paddingValues)) {
+
+            // 🔹 APP TITLE
+            Text(
+                text = "LingoDeck",
+                style = MaterialTheme.typography.headlineLarge,
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+            )
+
+            // 🔹 SUBTITLE
+            Text(
+                text = "Your language decks for smarter learning",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
+            )
+
             if (decks.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(text = "No decks available")
@@ -395,7 +411,7 @@ fun DeckDetailScreen(
                 if (flashcards.isNotEmpty()) {
                     val isReview = dueFlashcardsCount > 0
                     val count = if (isReview) minOf(dueFlashcardsCount, 20) else minOf(flashcards.size, 20)
-                    val label = if (isReview) "Start Review ($count)" else "Practice ($count)"
+                    val label = if (isReview) "Start Study Session ($count)" else "Practice ($count)"
                     
                     ExtendedFloatingActionButton(
                         onClick = if (isReview) onStartReviewClick else onStartPracticeClick,
@@ -419,7 +435,7 @@ fun DeckDetailScreen(
                         .padding(paddingValues)
                 ) {
                     Text(
-                        text = "Upcoming Reviews:",
+                        text = "Upcoming Study Sessions:",
                         style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
