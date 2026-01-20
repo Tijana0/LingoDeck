@@ -60,6 +60,8 @@ fun ReviewScreen(
         }
     }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
     DisposableEffect(context) {
         val ttsInstance = TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
@@ -95,7 +97,9 @@ fun ReviewScreen(
         }
     }
 
-    Scaffold { paddingValues ->
+    Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -200,36 +204,46 @@ fun ReviewScreen(
                             .padding(16.dp)
                             .offset { IntOffset(offset.value.roundToInt(), 0) }
                             .pointerInput(hasFlipped) {
-                                if (hasFlipped) {
-                                    detectHorizontalDragGestures(
-                                        onDragEnd = {
-                                            scope.launch {
-                                                if (offset.value > threshold) {
-                                                    sessionCorrect++
-                                                    hasProcessedCards = true
-                                                    // Swipe Right (Correct)
-                                                    offset.animateTo(screenWidth)
-                                                    onAnswer(flashcard, true)
-                                                    // State reset handled by LaunchedEffect(flashcard)
-                                                    offset.snapTo(0f)
-                                                } else if (offset.value < -threshold) {
-                                                    sessionIncorrect++
-                                                    hasProcessedCards = true
-                                                    // Swipe Left (Wrong)
-                                                    offset.animateTo(-screenWidth)
-                                                    onAnswer(flashcard, false)
-                                                    // State reset handled by LaunchedEffect(flashcard)
-                                                    offset.snapTo(0f)
-                                                } else {
-                                                    offset.animateTo(0f)
-                                                }
+                                detectHorizontalDragGestures(
+                                    onDragEnd = {
+                                        scope.launch {
+                                            if (!hasFlipped) {
+                                                snackbarHostState.showSnackbar(
+                                                    message = "Please flip the card first to reveal the answer!",
+                                                    duration = SnackbarDuration.Short,
+                                                    withDismissAction = true
+                                                )
+                                                offset.animateTo(0f)
+                                                return@launch
                                             }
-                                        },
-                                        onDragCancel = {
-                                            scope.launch { offset.animateTo(0f) }
+
+                                            if (offset.value > threshold) {
+                                                sessionCorrect++
+                                                hasProcessedCards = true
+                                                // Swipe Right (Correct)
+                                                offset.animateTo(screenWidth)
+                                                onAnswer(flashcard, true)
+                                                // State reset handled by LaunchedEffect(flashcard)
+                                                offset.snapTo(0f)
+                                            } else if (offset.value < -threshold) {
+                                                sessionIncorrect++
+                                                hasProcessedCards = true
+                                                // Swipe Left (Wrong)
+                                                offset.animateTo(-screenWidth)
+                                                onAnswer(flashcard, false)
+                                                // State reset handled by LaunchedEffect(flashcard)
+                                                offset.snapTo(0f)
+                                            } else {
+                                                offset.animateTo(0f)
+                                            }
                                         }
-                                    ) { change, dragAmount ->
-                                        change.consume()
+                                    },
+                                    onDragCancel = {
+                                        scope.launch { offset.animateTo(0f) }
+                                    }
+                                ) { change, dragAmount ->
+                                    change.consume()
+                                    if (hasFlipped) {
                                         scope.launch { offset.snapTo(offset.value + dragAmount) }
                                     }
                                 }
