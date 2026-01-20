@@ -172,4 +172,14 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
             _reviewCards.value = _reviewCards.value.filter { it.id != flashcard.id }
         }
     }
+
+    fun logSession(deckId: Int, correct: Int, incorrect: Int) {
+        viewModelScope.launch {
+            repository.logSession(deckId, correct, incorrect)
+        }
+    }
+
+    fun getDeckAccuracy(deckId: Int): Flow<Float?> {
+        return repository.getAverageAccuracy(deckId)
+    }
 }

@@ -5,10 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [FlashcardEntity::class, DeckEntity::class], version = 4)
+@Database(entities = [FlashcardEntity::class, DeckEntity::class, StudySessionEntity::class], version = 5)
 abstract class FlashcardDatabase : RoomDatabase() {
     abstract fun flashcardDao(): FlashcardDao
     abstract fun deckDao(): DeckDao
+    abstract fun studySessionDao(): StudySessionDao
 
     companion object {
         @Volatile

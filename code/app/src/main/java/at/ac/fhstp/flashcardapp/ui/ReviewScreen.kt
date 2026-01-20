@@ -37,7 +37,8 @@ fun ReviewScreen(
     dueFlashcards: List<Flashcard>?,
     deck: Deck?,
     onAnswer: (Flashcard, Boolean) -> Unit,
-    onReviewComplete: () -> Unit
+    onReviewComplete: () -> Unit,
+    onSessionFinished: (Int, Int) -> Unit
 ) {
     var showBack by remember { mutableStateOf(false) }
     var hasFlipped by remember { mutableStateOf(false) }
@@ -98,6 +99,9 @@ fun ReviewScreen(
     }
 
     if (dueFlashcards != null && dueFlashcards.isEmpty() && hasProcessedCards) {
+        LaunchedEffect(Unit) {
+            onSessionFinished(sessionCorrect, sessionIncorrect)
+        }
         ReviewSummaryScreen(
             correct = sessionCorrect,
             incorrect = sessionIncorrect,
