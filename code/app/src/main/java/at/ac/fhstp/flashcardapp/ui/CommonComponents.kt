@@ -34,22 +34,11 @@ fun FlashcardItem(
             .fillMaxWidth()
             .padding(horizontal = 8.dp, vertical = 6.dp),
         shape = RoundedCornerShape(22.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        border = BorderStroke(
-            1.6.dp,
-            Color(0xFF5A4BFF).copy(alpha = 0.28f)
-        )
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
     ) {
         Box(
             modifier = Modifier
-                .background(
-                    Brush.linearGradient(
-                        listOf(
-                            Color(0xFF1E293B),
-                            Color(0xFF0F172A)
-                        )
-                    )
-                )
+                .background(Color(0xFF1E293B))
                 .padding(16.dp)
         ) {
             Column {
