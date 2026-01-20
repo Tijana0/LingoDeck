@@ -79,9 +79,8 @@ fun DeckForm(
         "hi" to "Hindi",
         "id" to "Indonesian",
         "th" to "Thai",
-        "vi" to "Vietnamese",
-        "other" to "Other (No Audio)"
-    ).sortedBy { it.second }
+        "vi" to "Vietnamese"
+    ).sortedBy { it.second } + ("other" to "Other (No Audio)")
 
     Column(
         modifier = Modifier
