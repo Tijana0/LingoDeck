@@ -353,7 +353,35 @@ fun ReviewSummaryScreen(
     val percentage = if (total > 0) (correct.toFloat() / total * 100).toInt() else 0
 
     Scaffold(
-        containerColor = SummaryBgDark
+        containerColor = SummaryBgDark,
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 20.dp)
+            ) {
+                Button(
+                    onClick = onBackToDeck,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = BrandPurple),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Back to Deck",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+        }
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -467,30 +495,6 @@ fun ReviewSummaryScreen(
             )
 
             Spacer(modifier = Modifier.weight(1f))
-
-            // 6. Bottom Button
-            Button(
-                onClick = onBackToDeck,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = BrandPurple),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Back to Deck",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
