@@ -39,11 +39,11 @@ fun FlashcardApp(
             startDestination = Routes.DeckList.name
         ) {
             composable(Routes.DeckList.name) {
-                val decks by viewModel.decks.collectAsState()
+                val decksUiState by viewModel.decksUiState.collectAsState()
                 val totalDueCount by viewModel.totalDueFlashcardsCount.collectAsState()
                 val context = LocalContext.current
                 DeckListScreen(
-                    decks = decks,
+                    decksUiState = decksUiState,
                     totalDueCount = totalDueCount,
                     onDeckClick = { deck ->
                         navController.navigate("${Routes.DeckDetail.name}/${deck.id}")

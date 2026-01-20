@@ -153,4 +153,8 @@ class FlashcardRepository(
         )
         flashcardDao.deleteFlashcard(entity)
     }
+
+    fun getDeckStats(): Flow<List<at.ac.fhstp.flashcardapp.db.DeckStats>> {
+        return flashcardDao.getDeckStats(System.currentTimeMillis())
+    }
 }

@@ -24,9 +24,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import at.ac.fhstp.flashcardapp.data.Deck
 
+import androidx.compose.ui.res.painterResource
+import at.ac.fhstp.flashcardapp.R
+
 @Composable
 fun DeckListScreen(
-    decks: List<Deck>,
+    decksUiState: List<DeckUiModel>,
     totalDueCount: Int,
     onDeckClick: (Deck) -> Unit,
     onAddDeckClick: () -> Unit,
@@ -137,84 +140,90 @@ fun DeckListScreen(
                 .padding(paddingValues)
         ) {
 
-            // DASHBOARD HEADER
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0xFF5A4BFF), // blue
-                                Color(0xFF8B3DFF)  // purple
-                            )
-                        )
-                    )
-                    .padding(horizontal = 20.dp, vertical = 24.dp)
+            // REDESIGNED HEADER
+            Surface(
+                color = MaterialTheme.colorScheme.primaryContainer,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Column {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp)
+                ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Column {
-                            Text(
-                                text = "LingoDeck",
-                                style = MaterialTheme.typography.headlineLarge,
-                                color = Color.White
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.logo),
+                                contentDescription = null,
+                                modifier = Modifier.size(40.dp),
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
                             )
-                            Text(
-                                text = "Ready to learn?",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Color.White.copy(alpha = 0.9f)
-                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = "LingoDeck",
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                                )
+                                Text(
+                                    text = "Ready to learn?",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                                )
+                            }
                         }
                         
                         // DASHBOARD STAT CARD
                         if (totalDueCount > 0) {
                             Card(
                                 colors = CardDefaults.cardColors(
-                                    containerColor = Color.White.copy(alpha = 0.2f)
+                                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.1f)
                                 ),
                                 shape = RoundedCornerShape(16.dp)
                             ) {
                                 Column(
-                                    modifier = Modifier.padding(12.dp),
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Text(
                                         text = "$totalDueCount",
-                                        style = MaterialTheme.typography.headlineMedium,
-                                        color = Color.White
+                                        style = MaterialTheme.typography.titleLarge,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
                                     )
                                     Text(
-                                        text = "Due Today",
+                                        text = "Due",
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = Color.White.copy(alpha = 0.9f)
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                                     )
                                 }
                             }
                         } else {
                              Card(
                                 colors = CardDefaults.cardColors(
-                                    containerColor = Color.White.copy(alpha = 0.2f)
+                                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.1f)
                                 ),
                                 shape = RoundedCornerShape(16.dp)
                             ) {
                                 Column(
-                                    modifier = Modifier.padding(12.dp),
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                                     horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Icon(
                                         Icons.Default.Check,
                                         contentDescription = null,
-                                        tint = Color.White,
-                                        modifier = Modifier.size(24.dp)
+                                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        modifier = Modifier.size(20.dp)
                                     )
                                     Text(
-                                        text = "All Done!",
+                                        text = "All Done",
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = Color.White.copy(alpha = 0.9f)
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                                     )
                                 }
                             }
@@ -223,11 +232,19 @@ fun DeckListScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Text(
+                text = "Decks",
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(horizontal = 24.dp),
+                color = MaterialTheme.colorScheme.onSurface
+            )
 
-// CONTENT
+            Spacer(modifier = Modifier.height(8.dp))
 
-            if (decks.isEmpty()) {
+            // CONTENT
+            if (decksUiState.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -239,8 +256,8 @@ fun DeckListScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(bottom = 16.dp)
                 ) {
-                    items(decks) { deck ->
-
+                    items(decksUiState) { deckUi ->
+                        val deck = deckUi.deck
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -252,7 +269,6 @@ fun DeckListScreen(
                                 1.6.dp,
                                 Color(0xFF5A4BFF).copy(alpha = 0.28f)
                             )
-
                         ) {
                             Box(
                                 modifier = Modifier
@@ -266,58 +282,104 @@ fun DeckListScreen(
                                     )
                                     .padding(16.dp)
                             ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
+                                Column {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
 
-                                    // LEFT SIDE
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        // LEFT SIDE (Old Style)
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
 
-                                        // Icon bubble
-                                        Box(
-                                            modifier = Modifier
-                                                .size(48.dp)
-                                                .background(
-                                                    Brush.linearGradient(
-                                                        listOf(
-                                                            Color(0xFF6D5CFF),
-                                                            Color(0xFF8B5CF6)
-                                                        )
+                                            // Icon bubble
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(48.dp)
+                                                    .background(
+                                                        Brush.linearGradient(
+                                                            listOf(
+                                                                Color(0xFF6D5CFF),
+                                                                Color(0xFF8B5CF6)
+                                                            )
+                                                        ),
+                                                        RoundedCornerShape(14.dp)
                                                     ),
-                                                    RoundedCornerShape(14.dp)
-                                                ),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Book,
-                                                contentDescription = null,
-                                                tint = Color.White
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Book,
+                                                    contentDescription = null,
+                                                    tint = Color.White
+                                                )
+                                            }
+
+                                            Spacer(modifier = Modifier.width(12.dp))
+
+                                            Text(
+                                                text = deck.name,
+                                                style = MaterialTheme.typography.titleMedium,
+                                                color = Color.White
                                             )
                                         }
 
-                                        Spacer(modifier = Modifier.width(12.dp))
-
-                                        Text(
-                                            text = deck.name,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            color = Color.White
-                                        )
+                                        // DELETE BUTTON
+                                        IconButton(
+                                            onClick = {
+                                                deckToDelete = deck
+                                                showDeleteDialog = true
+                                            }
+                                        ) {
+                                            Icon(
+                                                Icons.Default.Delete,
+                                                contentDescription = "Delete deck",
+                                                tint = Color(0xFFFF6B6B)
+                                            )
+                                        }
                                     }
 
-                                    // DELETE BUTTON
-                                    IconButton(
-                                        onClick = {
-                                            deckToDelete = deck
-                                            showDeleteDialog = true
-                                        }
+                                    // NEW STATS SECTION (Adapted for Dark Theme)
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
+                                    Spacer(modifier = Modifier.height(12.dp))
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Icon(
-                                            Icons.Default.Delete,
-                                            contentDescription = "Delete deck",
-                                            tint = Color(0xFFFF6B6B)
+                                        Text(
+                                            text = "${deckUi.totalCards} cards",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color.White.copy(alpha = 0.7f)
                                         )
+
+                                        if (deckUi.dueCards > 0) {
+                                            Surface(
+                                                color = Color(0xFFFF6B6B).copy(alpha = 0.2f),
+                                                shape = RoundedCornerShape(8.dp)
+                                            ) {
+                                                Text(
+                                                    text = "${deckUi.dueCards} due",
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    color = Color(0xFFFF6B6B),
+                                                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                                )
+                                            }
+                                        } else {
+                                            Surface(
+                                                color = Color(0xFF4CAF50).copy(alpha = 0.2f),
+                                                shape = RoundedCornerShape(8.dp)
+                                            ) {
+                                                Text(
+                                                    text = "All done",
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    color = Color(0xFF4CAF50),
+                                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -325,8 +387,6 @@ fun DeckListScreen(
                     }
                 }
             }
-
-
         }
     }
 }

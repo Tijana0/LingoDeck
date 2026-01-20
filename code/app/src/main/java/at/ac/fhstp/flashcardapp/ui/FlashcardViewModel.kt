@@ -10,25 +10,50 @@ import at.ac.fhstp.flashcardapp.logic.SpacedRepetition
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+data class DeckUiModel(
+    val deck: Deck,
+    val totalCards: Int,
+    val dueCards: Int
+)
+
 class FlashcardViewModel(private val repository: FlashcardRepository) : ViewModel() {
+
+    val decksUiState: StateFlow<List<DeckUiModel>> = combine(
+        repository.allDecks,
+        repository.getDeckStats()
+    ) { decks, stats ->
+        decks.map { deck ->
+            val deckStats = stats.find { it.deckId == deck.id }
+            DeckUiModel(
+                deck = deck,
+                totalCards = deckStats?.totalCards ?: 0,
+                dueCards = minOf(deckStats?.dueCards ?: 0, 20)
+            )
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
+
+    val totalDueFlashcardsCount: StateFlow<Int> = decksUiState
+        .map { list -> list.sumOf { it.dueCards } }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
+        )
 
     val decks: StateFlow<List<Deck>> = repository.allDecks
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
-        )
-
-    val totalDueFlashcardsCount: StateFlow<Int> = repository.getAllDueFlashcards()
-        .map { it.size }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = 0
         )
 
     private val _reviewCards = kotlinx.coroutines.flow.MutableStateFlow<List<Flashcard>>(emptyList())
