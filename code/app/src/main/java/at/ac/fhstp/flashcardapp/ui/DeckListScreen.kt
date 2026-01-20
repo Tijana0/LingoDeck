@@ -129,7 +129,7 @@ fun DeckListScreen(
                     onClick = onAddDeckClick,
                     icon = { Icon(Icons.Default.Add, contentDescription = "Add") },
                     text = { Text("New Deck") },
-                    containerColor = Color(0xFF9C27B0), //CTA color
+                    containerColor = Color(0xFF6D5CFF), // Theme purple
                     contentColor = Color.White,
                     modifier = Modifier.weight(1f)
                 )
