@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import at.ac.fhstp.flashcardapp.R
 import at.ac.fhstp.flashcardapp.data.Deck
+import at.ac.fhstp.flashcardapp.ui.theme.*
 
 @Composable
 fun DeckListScreen(
@@ -111,6 +112,7 @@ fun DeckListScreen(
     }
 
     Scaffold(
+        containerColor = BgDark,
         bottomBar = {
             Row(
                 modifier = Modifier
@@ -129,7 +131,7 @@ fun DeckListScreen(
                     onClick = onAddDeckClick,
                     icon = { Icon(Icons.Default.Add, contentDescription = "Add") },
                     text = { Text("New Deck") },
-                    containerColor = Color(0xFF6D5CFF), // Theme purple
+                    containerColor = AccentPurple,
                     contentColor = Color.White,
                     modifier = Modifier.weight(1f)
                 )
@@ -144,7 +146,7 @@ fun DeckListScreen(
 
             // REDESIGNED HEADER
             Surface(
-                color = MaterialTheme.colorScheme.primaryContainer,
+                color = BgDark,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
@@ -162,20 +164,20 @@ fun DeckListScreen(
                                 painter = painterResource(id = R.drawable.logo),
                                 contentDescription = null,
                                 modifier = Modifier.size(40.dp),
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                tint = Color.White
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
                                 Text(
                                     text = "LingoDeck",
                                     style = MaterialTheme.typography.headlineSmall,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    color = Color.White,
                                     fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
                                 )
                                 Text(
                                     text = "Ready to learn?",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                                    color = Color.White.copy(alpha = 0.8f)
                                 )
                             }
                         }
@@ -184,7 +186,7 @@ fun DeckListScreen(
                         if (totalDueCount > 0) {
                             Card(
                                 colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.1f)
+                                    containerColor = Color.White.copy(alpha = 0.1f)
                                 ),
                                 shape = RoundedCornerShape(16.dp)
                             ) {
@@ -195,20 +197,20 @@ fun DeckListScreen(
                                     Text(
                                         text = "$totalDueCount",
                                         style = MaterialTheme.typography.titleLarge,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        color = Color.White,
                                         fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
                                     )
                                     Text(
                                         text = "Due",
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                                        color = Color.White.copy(alpha = 0.8f)
                                     )
                                 }
                             }
                         } else {
                              Card(
                                 colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.1f)
+                                    containerColor = Color.White.copy(alpha = 0.1f)
                                 ),
                                 shape = RoundedCornerShape(16.dp)
                             ) {
@@ -219,13 +221,13 @@ fun DeckListScreen(
                                     Icon(
                                         Icons.Default.Check,
                                         contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                        tint = Color.White,
                                         modifier = Modifier.size(20.dp)
                                     )
                                     Text(
                                         text = "All Done",
                                         style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                                        color = Color.White.copy(alpha = 0.8f)
                                     )
                                 }
                             }
@@ -269,7 +271,7 @@ fun DeckListScreen(
                             colors = CardDefaults.cardColors(containerColor = Color.Transparent),
                             border = BorderStroke(
                                 1.6.dp,
-                                Color(0xFF5A4BFF).copy(alpha = 0.28f)
+                                AccentPurple.copy(alpha = 0.28f)
                             )
                         ) {
                             Box(
@@ -277,8 +279,8 @@ fun DeckListScreen(
                                     .background(
                                         Brush.linearGradient(
                                             listOf(
-                                                Color(0xFF1E293B),
-                                                Color(0xFF0F172A)
+                                                CardBg,
+                                                BgDark
                                             )
                                         )
                                     )
@@ -301,8 +303,8 @@ fun DeckListScreen(
                                                     .background(
                                                         Brush.linearGradient(
                                                             listOf(
-                                                                Color(0xFF6D5CFF),
-                                                                Color(0xFF8B5CF6)
+                                                                AccentPurple,
+                                                                AccentBlue
                                                             )
                                                         ),
                                                         RoundedCornerShape(14.dp)
@@ -382,26 +384,26 @@ fun DeckListScreen(
 
                                         if (deckUi.dueCards > 0) {
                                             Surface(
-                                                color = Color(0xFFFF6B6B).copy(alpha = 0.2f),
+                                                color = AccentRed.copy(alpha = 0.2f),
                                                 shape = RoundedCornerShape(8.dp)
                                             ) {
                                                 Text(
                                                     text = "${deckUi.dueCards} due",
                                                     style = MaterialTheme.typography.bodyMedium,
-                                                    color = Color(0xFFFF6B6B),
+                                                    color = AccentRed,
                                                     fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
                                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                                                 )
                                             }
                                         } else {
                                             Surface(
-                                                color = Color(0xFF4CAF50).copy(alpha = 0.2f),
+                                                color = AccentGreen.copy(alpha = 0.2f),
                                                 shape = RoundedCornerShape(8.dp)
                                             ) {
                                                 Text(
                                                     text = "All done",
                                                     style = MaterialTheme.typography.bodyMedium,
-                                                    color = Color(0xFF4CAF50),
+                                                    color = AccentGreen,
                                                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                                                 )
                                             }

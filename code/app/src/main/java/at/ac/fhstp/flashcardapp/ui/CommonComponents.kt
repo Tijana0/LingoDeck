@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import at.ac.fhstp.flashcardapp.data.Flashcard
+import at.ac.fhstp.flashcardapp.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -38,7 +39,7 @@ fun FlashcardItem(
     ) {
         Box(
             modifier = Modifier
-                .background(Color(0xFF1E293B))
+                .background(CardBg)
                 .padding(16.dp)
         ) {
             Column {

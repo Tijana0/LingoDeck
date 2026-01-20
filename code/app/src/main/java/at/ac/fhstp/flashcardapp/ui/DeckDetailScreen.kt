@@ -24,17 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.ac.fhstp.flashcardapp.data.Flashcard
-
-// --- Color Palette ---
-val BgDark = Color(0xFF161B22)
-val CardBg = Color(0xFF1E2330)
-val AccentPurple = Color(0xFF6C4AFF)
-val AccentBlue = Color(0xFF2979FF)
-val AccentGreen = Color(0xFF00E676)
-val AccentRed = Color(0xFFFF5252)
-val TextWhite = Color.White
-val TextGray = Color(0xFF8B949E)
-val GridLineColor = Color(0xFF30363D)
+import at.ac.fhstp.flashcardapp.ui.theme.*
 
 @Composable
 fun DeckDetailScreen(
