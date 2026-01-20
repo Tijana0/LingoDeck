@@ -35,12 +35,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import at.ac.fhstp.flashcardapp.data.Deck
 import at.ac.fhstp.flashcardapp.data.Flashcard
-import at.ac.fhstp.flashcardapp.ui.theme.*
 import com.google.mlkit.nl.languageid.LanguageIdentification
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
 import kotlin.math.roundToInt
+
+// --- Colors ---
+val SummaryBgDark = Color(0xFF161B22) 
+val SummaryCardBg = Color(0xFF1E2330)
+val SuccessGreen = Color(0xFF00C853)
+val ErrorRed = Color(0xFFFF5252)
+val InfoBlue = Color(0xFF2979FF)
+val BrandPurple = Color(0xFF651FFF)
+val BrandPurpleLight = Color(0xFF7C4DFF)
 
 @Composable
 fun ReviewScreen(
@@ -345,7 +353,7 @@ fun ReviewSummaryScreen(
     val percentage = if (total > 0) (correct.toFloat() / total * 100).toInt() else 0
 
     Scaffold(
-        containerColor = BgDark,
+        containerColor = SummaryBgDark,
         bottomBar = {
             Box(
                 modifier = Modifier
@@ -504,7 +512,7 @@ fun ResultCard(
             .height(100.dp)
             .border(width = 1.dp, color = color.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
             .clip(RoundedCornerShape(16.dp))
-            .background(CardBg)
+            .background(SummaryCardBg)
             .padding(12.dp)
     ) {
         Column(
