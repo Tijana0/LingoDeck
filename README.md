@@ -1,5 +1,7 @@
 # Flashcard App: LingoDeck
 
+Pages: https://ccl3-ws2025-e53d7a.pages.nwt.fhstp.ac.at
+
 LingoDeck is a native Android flashcard application for language learning, built with Jetpack Compose. The app uses a Spaced Repetition System (SRS) to optimize learning efficiency and supports importing existing decks from Anki.
 
 ## Features
@@ -45,3 +47,8 @@ LingoDeck is a native Android flashcard application for language learning, built
 1.  Clone the repository.
 2.  Open the project in Android Studio (Ladybug or newer).
 3.  Sync Gradle and run on a physical device or emulator (API 26+).
+
+## Team Members
+
+Tijana Mijatović
+Diana Simonicova
