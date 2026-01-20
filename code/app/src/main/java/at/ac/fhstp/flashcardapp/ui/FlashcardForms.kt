@@ -1,6 +1,7 @@
 package at.ac.fhstp.flashcardapp.ui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -121,7 +122,9 @@ fun DeckForm(
         ) {
             OutlinedButton(
                 onClick = onCancel,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
             ) {
                 Text("Cancel")
             }
@@ -129,6 +132,7 @@ fun DeckForm(
             Button(
                 onClick = { if (deckName.isNotBlank()) onSave(deckName, frontLang, backLang) },
                 modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6D5CFF))
             ) {
                 Text(buttonText)
