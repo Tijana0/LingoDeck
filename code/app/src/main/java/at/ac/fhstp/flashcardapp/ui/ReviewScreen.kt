@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import at.ac.fhstp.flashcardapp.data.Deck
 import at.ac.fhstp.flashcardapp.data.Flashcard
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -209,10 +210,14 @@ fun ReviewScreen(
                                         scope.launch {
                                             if (!hasFlipped) {
                                                 snackbarHostState.currentSnackbarData?.dismiss()
-                                                snackbarHostState.showSnackbar(
-                                                    message = "Please flip the card first to reveal the answer!",
-                                                    duration = SnackbarDuration.Short
-                                                )
+                                                val snackJob = launch {
+                                                    snackbarHostState.showSnackbar(
+                                                        message = "Please flip the card first to reveal the answer!",
+                                                        duration = SnackbarDuration.Short
+                                                    )
+                                                }
+                                                delay(1500) // ~3x shorter than default Short (4s)
+                                                snackJob.cancel()
                                                 offset.animateTo(0f)
                                                 return@launch
                                             }
