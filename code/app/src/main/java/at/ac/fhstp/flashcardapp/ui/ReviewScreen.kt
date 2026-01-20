@@ -106,8 +106,8 @@ fun ReviewScreen(
             } else if (dueFlashcards.isEmpty()) {
                 Text(text = "No cards due.")
             } else {
-                val currentCount = sessionCorrect + sessionIncorrect + 1
                 val totalCount = if (initialTotal > 0) initialTotal else dueFlashcards.size + sessionCorrect + sessionIncorrect
+                val currentCount = minOf(sessionCorrect + sessionIncorrect + 1, totalCount)
                 Text(
                     text = "$currentCount / $totalCount",
                     style = MaterialTheme.typography.bodyMedium,
