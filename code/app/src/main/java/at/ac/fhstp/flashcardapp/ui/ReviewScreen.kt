@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
@@ -325,6 +326,24 @@ fun ReviewScreen(
     }
 }
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+
+// --- Colors ---
+val SummaryBgDark = Color(0xFF161B22) 
+val SummaryCardBg = Color(0xFF1E2330)
+val SuccessGreen = Color(0xFF00C853)
+val ErrorRed = Color(0xFFFF5252)
+val InfoBlue = Color(0xFF2979FF)
+val BrandPurple = Color(0xFF651FFF)
+val BrandPurpleLight = Color(0xFF7C4DFF)
+
 @Composable
 fun ReviewSummaryScreen(
     correct: Int,
@@ -334,73 +353,202 @@ fun ReviewSummaryScreen(
     val total = correct + incorrect
     val percentage = if (total > 0) (correct.toFloat() / total * 100).toInt() else 0
 
-    val message = remember(percentage) {
-        val highMessages = listOf(
-            "Outstanding work!",
-            "You crushed it!",
-            "Impressive mastery!",
-            "Sharp memory!"
-        )
-        val mediumMessages = listOf(
-            "Good job, keep it up!",
-            "Solid progress!",
-            "Getting there!",
-            "Nice effort!"
-        )
-        val lowMessages = listOf(
-            "Practice makes perfect.",
-            "Keep studying, you'll get it!",
-            "Don't give up!",
-            "Every mistake is a lesson."
-        )
+    Scaffold(
+        containerColor = SummaryBgDark
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            
+            Spacer(modifier = Modifier.height(20.dp))
 
-        when {
-            percentage >= 80 -> highMessages.random()
-            percentage >= 50 -> mediumMessages.random()
-            else -> lowMessages.random()
+            // 1. Success Header Icon
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape)
+                    .background(SuccessGreen),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Success",
+                    tint = Color.White,
+                    modifier = Modifier.size(48.dp)
+                )
+            }
+
+            // 2. Title and Subtitle
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(
+                    text = "Review Complete!",
+                    color = Color.White,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "Great job on finishing your review",
+                    color = Color.Gray,
+                    fontSize = 16.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // 3. Stats Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                ResultCard(
+                    label = "Total",
+                    value = "$total",
+                    color = InfoBlue,
+                    modifier = Modifier.weight(1f)
+                )
+                ResultCard(
+                    label = "Correct",
+                    value = "$correct",
+                    color = SuccessGreen,
+                    icon = Icons.Default.CheckCircle,
+                    modifier = Modifier.weight(1f)
+                )
+                ResultCard(
+                    label = "Wrong",
+                    value = "$incorrect",
+                    color = ErrorRed,
+                    icon = Icons.Default.Close,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            // 4. Accuracy Large Card
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(BrandPurpleLight, BrandPurple)
+                        )
+                    )
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Accuracy Rate",
+                        color = Color.White.copy(alpha = 0.9f),
+                        fontSize = 16.sp
+                    )
+                    Text(
+                        text = "$percentage%",
+                        color = Color.White,
+                        fontSize = 56.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            // 5. Motivational Text
+            Text(
+                text = "🎉 Excellent work! Keep it up!",
+                color = SuccessGreen,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // 6. Bottom Button
+            Button(
+                onClick = onBackToDeck,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = BrandPurple),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+                // Actually let's use ArrowBack if imports are correct.
+                // The snippet used Icons.AutoMirrored.Filled.ArrowBack.
+                // I need to ensure that import is present or use Default.ArrowBack.
+                // I'll stick to Default.ArrowBack for safety if AutoMirrored isn't imported, but wait, previous code used AutoMirrored.VolumeUp.
+                // I'll use Icons.Default.ArrowBack if I can import it, or just Check for now.
+                // Let's try to use Icons.AutoMirrored.Filled.ArrowBack since I saw it in imports in DeckDetailScreen.
+                // But ReviewScreen might not have it. I'll check imports.
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Back to Deck",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
+}
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+@Composable
+fun ResultCard(
+    label: String,
+    value: String,
+    color: Color,
+    icon: ImageVector? = null,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .height(100.dp)
+            .border(width = 1.dp, color = color.copy(alpha = 0.5f), shape = RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.dp))
+            .background(SummaryCardBg)
+            .padding(12.dp)
     ) {
-        Text(text = "Session Complete", style = MaterialTheme.typography.headlineLarge)
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        Text(text = "$percentage%", style = MaterialTheme.typography.displayLarge, color = MaterialTheme.colorScheme.primary)
-        Text(text = "Accuracy", style = MaterialTheme.typography.labelLarge)
-        
-        Spacer(modifier = Modifier.height(32.dp))
-        
-        Text(text = message, style = MaterialTheme.typography.headlineSmall, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
-        
-        Spacer(modifier = Modifier.height(32.dp))
-        
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "$correct", style = MaterialTheme.typography.headlineMedium, color = Color.Green)
-                Text(text = "Correct", style = MaterialTheme.typography.bodyMedium)
+            // Top Label Row
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (icon != null) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        tint = color,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                }
+                Text(
+                    text = label,
+                    color = color,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Medium
+                )
             }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "$incorrect", style = MaterialTheme.typography.headlineMedium, color = Color.Red)
-                Text(text = "Incorrect", style = MaterialTheme.typography.bodyMedium)
-            }
+            
+            // Bottom Value
+            Text(
+                text = value,
+                color = Color.White,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
-        
-        Spacer(modifier = Modifier.height(48.dp))
-        
-        ExtendedFloatingActionButton(
-            onClick = onBackToDeck,
-            modifier = Modifier.fillMaxWidth(),
-            icon = { Icon(Icons.Default.Check, contentDescription = null) },
-            text = { Text("Back to Deck") }
-        )
     }
 }
