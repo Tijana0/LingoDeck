@@ -180,4 +180,14 @@ class FlashcardRepository(
     fun getAverageAccuracy(deckId: Int): Flow<Float?> {
         return studySessionDao.getAverageAccuracy(deckId)
     }
+
+    fun getReviewedCountToday(deckId: Int): Flow<Int> {
+        val calendar = java.util.Calendar.getInstance().apply {
+            set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }
+        return studySessionDao.getReviewedCountToday(deckId, calendar.timeInMillis).map { it ?: 0 }
+    }
 }
