@@ -208,10 +208,10 @@ fun ReviewScreen(
                                     onDragEnd = {
                                         scope.launch {
                                             if (!hasFlipped) {
+                                                snackbarHostState.currentSnackbarData?.dismiss()
                                                 snackbarHostState.showSnackbar(
                                                     message = "Please flip the card first to reveal the answer!",
-                                                    duration = SnackbarDuration.Short,
-                                                    withDismissAction = true
+                                                    duration = SnackbarDuration.Short
                                                 )
                                                 offset.animateTo(0f)
                                                 return@launch
