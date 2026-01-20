@@ -128,7 +128,8 @@ fun FlashcardApp(
                         viewModel.addDeck(deckName, frontLang, backLang) {
                             navController.popBackStack()
                         }
-                    }
+                    },
+                    onCancel = { navController.popBackStack() }
                 )
             }
             composable(
@@ -151,7 +152,8 @@ fun FlashcardApp(
                             viewModel.updateDeck(deck!!, name, front, back) {
                                 navController.popBackStack()
                             }
-                        }
+                        },
+                        onCancel = { navController.popBackStack() }
                     )
                 } else {
                      Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

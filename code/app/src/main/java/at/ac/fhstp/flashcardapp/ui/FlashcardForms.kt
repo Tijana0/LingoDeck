@@ -4,16 +4,21 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import at.ac.fhstp.flashcardapp.R
 
 @Composable
-fun AddDeckScreen(onSave: (String, String, String) -> Unit) {
+fun AddDeckScreen(
+    onSave: (String, String, String) -> Unit,
+    onCancel: () -> Unit
+) {
     DeckForm(
         title = "Add a new deck",
         buttonText = "Save",
-        onSave = onSave
+        onSave = onSave,
+        onCancel = onCancel
     )
 }
 
@@ -22,7 +27,8 @@ fun EditDeckScreen(
     initialName: String,
     initialFront: String,
     initialBack: String,
-    onSave: (String, String, String) -> Unit
+    onSave: (String, String, String) -> Unit,
+    onCancel: () -> Unit
 ) {
     DeckForm(
         title = "Edit deck",
@@ -30,7 +36,8 @@ fun EditDeckScreen(
         initialName = initialName,
         initialFront = initialFront,
         initialBack = initialBack,
-        onSave = onSave
+        onSave = onSave,
+        onCancel = onCancel
     )
 }
 
@@ -41,7 +48,8 @@ fun DeckForm(
     initialName: String = "",
     initialFront: String = "de",
     initialBack: String = "en",
-    onSave: (String, String, String) -> Unit
+    onSave: (String, String, String) -> Unit,
+    onCancel: () -> Unit
 ) {
     var deckName by remember { mutableStateOf(initialName) }
     var frontLang by remember { mutableStateOf(initialFront) }
@@ -107,11 +115,24 @@ fun DeckForm(
             )
         }
 
-        Button(
-            onClick = { if (deckName.isNotBlank()) onSave(deckName, frontLang, backLang) },
-            modifier = Modifier.fillMaxWidth()
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(buttonText)
+            OutlinedButton(
+                onClick = onCancel,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Cancel")
+            }
+
+            Button(
+                onClick = { if (deckName.isNotBlank()) onSave(deckName, frontLang, backLang) },
+                modifier = Modifier.weight(1f),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6D5CFF))
+            ) {
+                Text(buttonText)
+            }
         }
     }
 }
