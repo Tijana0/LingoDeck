@@ -3,35 +3,52 @@ package at.ac.fhstp.flashcardapp.ui
 import android.speech.tts.TextToSpeech
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import at.ac.fhstp.flashcardapp.data.Deck
 import at.ac.fhstp.flashcardapp.data.Flashcard
+import com.google.mlkit.nl.languageid.LanguageIdentification
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Locale
 import kotlin.math.roundToInt
 
-import com.google.mlkit.nl.languageid.LanguageIdentification
+// --- Colors ---
+val SummaryBgDark = Color(0xFF161B22) 
+val SummaryCardBg = Color(0xFF1E2330)
+val SuccessGreen = Color(0xFF00C853)
+val ErrorRed = Color(0xFFFF5252)
+val InfoBlue = Color(0xFF2979FF)
+val BrandPurple = Color(0xFF651FFF)
+val BrandPurpleLight = Color(0xFF7C4DFF)
 
 @Composable
 fun ReviewScreen(
@@ -274,7 +291,7 @@ fun ReviewScreen(
                                     }
                                 }
                             }
-                            .clickable { 
+                            .clickable {
                                 showBack = !showBack
                                 if (showBack) hasFlipped = true 
                             },
@@ -325,24 +342,6 @@ fun ReviewScreen(
         }
     }
 }
-
-import androidx.compose.foundation.border
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
-
-// --- Colors ---
-val SummaryBgDark = Color(0xFF161B22) 
-val SummaryCardBg = Color(0xFF1E2330)
-val SuccessGreen = Color(0xFF00C853)
-val ErrorRed = Color(0xFFFF5252)
-val InfoBlue = Color(0xFF2979FF)
-val BrandPurple = Color(0xFF651FFF)
-val BrandPurpleLight = Color(0xFF7C4DFF)
 
 @Composable
 fun ReviewSummaryScreen(
@@ -483,13 +482,6 @@ fun ReviewSummaryScreen(
                     contentDescription = null,
                     modifier = Modifier.size(20.dp)
                 )
-                // Actually let's use ArrowBack if imports are correct.
-                // The snippet used Icons.AutoMirrored.Filled.ArrowBack.
-                // I need to ensure that import is present or use Default.ArrowBack.
-                // I'll stick to Default.ArrowBack for safety if AutoMirrored isn't imported, but wait, previous code used AutoMirrored.VolumeUp.
-                // I'll use Icons.Default.ArrowBack if I can import it, or just Check for now.
-                // Let's try to use Icons.AutoMirrored.Filled.ArrowBack since I saw it in imports in DeckDetailScreen.
-                // But ReviewScreen might not have it. I'll check imports.
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Back to Deck",
