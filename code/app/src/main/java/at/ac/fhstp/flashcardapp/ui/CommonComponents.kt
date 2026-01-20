@@ -109,12 +109,12 @@ fun FlashcardItem(
                         color = Color.White.copy(alpha = 0.6f)
                     )
                     Text(
-                        text = "Interval: ${flashcard.interval}d",
+                        text = "Interval: ${"%.2f".format(flashcard.interval)}d",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.6f)
                     )
                     Text(
-                        text = "Ease: ${flashcard.easeFactor}",
+                        text = "Ease: ${"%.2f".format(flashcard.easeFactor)}",
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.6f)
                     )
