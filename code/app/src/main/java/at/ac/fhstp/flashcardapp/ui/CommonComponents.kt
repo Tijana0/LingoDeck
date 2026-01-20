@@ -137,6 +137,7 @@ fun LanguageDropdown(
         OutlinedButton(
             onClick = { expanded = true },
             modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
         ) {
             Row(

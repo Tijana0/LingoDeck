@@ -94,7 +94,8 @@ fun DeckForm(
             value = deckName,
             onValueChange = { deckName = it },
             label = { Text("Deck Name") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp)
         )
         
         Text(text = "Languages", style = MaterialTheme.typography.titleMedium)
@@ -193,14 +194,16 @@ fun FlashcardForm(
             value = front,
             onValueChange = { front = it },
             label = { Text("Front") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp)
         )
 
         OutlinedTextField(
             value = back,
             onValueChange = { back = it },
             label = { Text("Back") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp)
         )
 
         Row(
