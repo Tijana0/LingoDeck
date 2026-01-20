@@ -142,10 +142,14 @@ fun DeckForm(
 }
 
 @Composable
-fun AddFlashcardScreen(onSave: (String, String) -> Unit) {
+fun AddFlashcardScreen(
+    onSave: (String, String) -> Unit,
+    onCancel: () -> Unit
+) {
     FlashcardForm(
         buttonText = stringResource(R.string.save),
-        onSave = onSave
+        onSave = onSave,
+        onCancel = onCancel
     )
 }
 
@@ -153,13 +157,15 @@ fun AddFlashcardScreen(onSave: (String, String) -> Unit) {
 fun EditFlashcardScreen(
     initialFront: String,
     initialBack: String,
-    onSave: (String, String) -> Unit
+    onSave: (String, String) -> Unit,
+    onCancel: () -> Unit
 ) {
     FlashcardForm(
         initialFront = initialFront,
         initialBack = initialBack,
         buttonText = "Update",
-        onSave = onSave
+        onSave = onSave,
+        onCancel = onCancel
     )
 }
 
@@ -168,7 +174,8 @@ fun FlashcardForm(
     initialFront: String = "",
     initialBack: String = "",
     buttonText: String,
-    onSave: (String, String) -> Unit
+    onSave: (String, String) -> Unit,
+    onCancel: () -> Unit
 ) {
     var front by remember { mutableStateOf(initialFront) }
     var back by remember { mutableStateOf(initialBack) }
@@ -196,11 +203,27 @@ fun FlashcardForm(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Button(
-            onClick = { if (front.isNotBlank()) onSave(front, back) },
-            modifier = Modifier.fillMaxWidth()
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(buttonText)
+            OutlinedButton(
+                onClick = onCancel,
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+            ) {
+                Text("Cancel")
+            }
+
+            Button(
+                onClick = { if (front.isNotBlank()) onSave(front, back) },
+                modifier = Modifier.weight(1f),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6D5CFF))
+            ) {
+                Text(buttonText)
+            }
         }
     }
 }

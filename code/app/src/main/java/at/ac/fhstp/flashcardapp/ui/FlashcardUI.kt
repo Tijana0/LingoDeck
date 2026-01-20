@@ -170,7 +170,8 @@ fun FlashcardApp(
                     onSave = { front, back ->
                         viewModel.addFlashcard(deckId, front, back)
                         navController.popBackStack()
-                    }
+                    },
+                    onCancel = { navController.popBackStack() }
                 )
             }
             composable(
@@ -191,7 +192,8 @@ fun FlashcardApp(
                         onSave = { newFront, newBack ->
                             viewModel.updateFlashcard(flashcard!!, newFront, newBack)
                             navController.popBackStack()
-                        }
+                        },
+                        onCancel = { navController.popBackStack() }
                     )
                 } else {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
