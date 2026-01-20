@@ -1,64 +1,54 @@
-Example plain HTML site using GitLab Pages.
+# Flashcard App: LingoDeck
 
-Learn more about GitLab Pages at https://pages.gitlab.io and the official
-documentation https://docs.gitlab.com/ce/user/project/pages/.
+Pages: https://ccl3-ws2025-e53d7a.pages.nwt.fhstp.ac.at
 
----
+LingoDeck is a native Android flashcard application for language learning, built with Jetpack Compose. The app uses a Spaced Repetition System (SRS) to optimize learning efficiency and supports importing existing decks from Anki.
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+## Features
 
-- [GitLab CI](#gitlab-ci)
-- [GitLab User or Group Pages](#gitlab-user-or-group-pages)
-- [Did you fork this project?](#did-you-fork-this-project)
-- [Troubleshooting](#troubleshooting)
+### Learning
+* **Spaced Repetition:** Smart scheduling that shows you cards right before you're likely to forget them.
+* **Practice Mode:** Study any deck at any time, even if no reviews are currently scheduled.
+* **Session Limits:** Focused study sessions capped at 20 cards to prevent burnout.
+* **Progress Tracking:** Real-time "X / Y" counter during sessions.
 
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+### Interactive Review
+* **Gesture-Based Interface:** Swipe right for correct, left for incorrect.
+* **Anti-Cheat Logic:** Swipe is disabled until the card is flipped to ensure you actually see the answer.
+* **Toggle Flip:** Tap cards to flip between front and back as many times as needed.
+* **Visual Feedback:** Color-coded borders (Green/Red) that react to your swipe direction.
 
-## GitLab CI
+### Multimedia & Languages
+* **Native Text-to-Speech:** Voice output for both sides of the card.
+* **Multi-Language Support:** Choose from over 20 languages (including English, German, French, Japanese, Indonesian, and more).
+* **Auto-Play:** Optional automatic audio playback when a card is revealed.
 
-This project's static Pages are built by [GitLab CI][ci], following the steps
-defined in [`.gitlab-ci.yml`](.gitlab-ci.yml):
+### Data Management
+* **Anki Import:** Easily import .apkg files. The app automatically unzips and parses the Anki SQLite database.
+* **Deck Management:** Organize cards into decks with custom language settings.
+* **Edit/Delete:** Full control over your data with intuitive dropdown menus and safety confirmation dialogs.
 
-```
-image: busybox
+### Insights & Motivation
+* **Review Timeline:** A 7-day chart showing your upcoming workload.
+* **Session Summary:** Detailed stats (accuracy %, correct/incorrect counts) and randomized motivational messages after every session.
 
-pages:
-  stage: deploy
-  script:
-  - echo 'Nothing to do...'
-  artifacts:
-    paths:
-    - public
-    expire_in: 1 day
-  rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
-```
+## Tech Stack
 
-The above example expects to put all your HTML files in the `public/` directory.
+* **Language:** Kotlin
+* **UI:** Jetpack Compose (Material 3)
+* **Database:** Room (SQLite) for persistence and local storage.
+* **Concurrency:** Kotlin Coroutines & Flow for reactive UI updates.
+* **Navigation:** Compose Navigation.
+* **Audio:** Android TTS (Text-to-Speech) Engine.
+* **IO:** ZipInputStream for Anki archive extraction.
 
-## GitLab User or Group Pages
+## Installation
 
-To use this project as your user/group website, you will need one additional
-step: just rename your project to `namespace.gitlab.io`, where `namespace` is
-your `username` or `groupname`. This can be done by navigating to your
-project's **Settings**.
+1.  Clone the repository.
+2.  Open the project in Android Studio (Ladybug or newer).
+3.  Sync Gradle and run on a physical device or emulator (API 26+).
 
-Read more about [user/group Pages][userpages] and [project Pages][projpages].
+## Team Members
 
-## Did you fork this project?
-
-If you forked this project for your own use, please go to your project's
-**Settings** and remove the forking relationship, which won't be necessary
-unless you want to contribute back to the upstream project.
-
-## Troubleshooting
-
-1. CSS is missing! That means that you have wrongly set up the CSS URL in your
-   HTML files. Have a look at the [index.html] for an example.
-
-[ci]: https://about.gitlab.com/gitlab-ci/
-[index.html]: https://gitlab.com/pages/plain-html/blob/master/public/index.html
-[userpages]: https://docs.gitlab.com/ce/user/project/pages/introduction.html#user-or-group-pages
-[projpages]: https://docs.gitlab.com/ce/user/project/pages/introduction.html#project-pages
+* Tijana Mijatović
+* Diana Simonicova
