@@ -37,6 +37,7 @@ fun ReviewScreen(
     onReviewComplete: () -> Unit
 ) {
     var showBack by remember { mutableStateOf(false) }
+    var hasFlipped by remember { mutableStateOf(false) }
     val offset = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
     val configuration = LocalConfiguration.current
@@ -119,6 +120,11 @@ fun ReviewScreen(
 
                 val flashcard = dueFlashcards.first()
 
+                LaunchedEffect(flashcard) {
+                    showBack = false
+                    hasFlipped = false
+                }
+
                 if (deck != null) {
                     LaunchedEffect(flashcard, showBack, isTtsReady) {
                         if (isTtsReady) {
@@ -193,8 +199,8 @@ fun ReviewScreen(
                             }
                             .padding(16.dp)
                             .offset { IntOffset(offset.value.roundToInt(), 0) }
-                            .pointerInput(showBack) {
-                                if (showBack) {
+                            .pointerInput(hasFlipped) {
+                                if (hasFlipped) {
                                     detectHorizontalDragGestures(
                                         onDragEnd = {
                                             scope.launch {
@@ -204,7 +210,7 @@ fun ReviewScreen(
                                                     // Swipe Right (Correct)
                                                     offset.animateTo(screenWidth)
                                                     onAnswer(flashcard, true)
-                                                    showBack = false
+                                                    // State reset handled by LaunchedEffect(flashcard)
                                                     offset.snapTo(0f)
                                                 } else if (offset.value < -threshold) {
                                                     sessionIncorrect++
@@ -212,7 +218,7 @@ fun ReviewScreen(
                                                     // Swipe Left (Wrong)
                                                     offset.animateTo(-screenWidth)
                                                     onAnswer(flashcard, false)
-                                                    showBack = false
+                                                    // State reset handled by LaunchedEffect(flashcard)
                                                     offset.snapTo(0f)
                                                 } else {
                                                     offset.animateTo(0f)
@@ -228,7 +234,10 @@ fun ReviewScreen(
                                     }
                                 }
                             }
-                            .clickable { showBack = !showBack },
+                            .clickable { 
+                                showBack = !showBack
+                                if (showBack) hasFlipped = true 
+                            },
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                     ) {
                         Column(
