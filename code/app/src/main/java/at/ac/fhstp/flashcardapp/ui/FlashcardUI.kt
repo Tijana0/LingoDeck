@@ -305,6 +305,8 @@ fun DeckListScreen(
                     onClick = onAddDeckClick,
                     icon = { Icon(Icons.Default.Add, contentDescription = "Add") },
                     text = { Text("New Deck") },
+                    containerColor = Color(0xFF9C27B0), //CTA color
+                    contentColor = Color.White,
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -371,7 +373,11 @@ fun DeckListScreen(
                                 .clickable { onDeckClick(deck) },
                             shape = RoundedCornerShape(22.dp),
                             colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.08f))
+                            border = BorderStroke(
+                                1.6.dp,
+                                Color(0xFF5A4BFF).copy(alpha = 0.28f)
+                            )
+
                         ) {
                             Box(
                                 modifier = Modifier
