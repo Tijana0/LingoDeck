@@ -77,6 +77,7 @@ class AnkiImporter(
             .replace(Regex("<p>", RegexOption.IGNORE_CASE), "\n")
             .replace(Regex("</p>", RegexOption.IGNORE_CASE), "")
             .replace(Regex("<.*?>"), "") // Remove remaining tags
+            .replace(Regex("\\[sound:.*?\\]", RegexOption.IGNORE_CASE), "") // Remove Anki sound tags
             .replace("&nbsp;", " ")
             .replace("&lt;", "<")
             .replace("&gt;", ">")
