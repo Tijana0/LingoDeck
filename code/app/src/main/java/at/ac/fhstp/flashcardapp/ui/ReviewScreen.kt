@@ -51,6 +51,13 @@ fun ReviewScreen(
     var sessionCorrect by remember { mutableIntStateOf(0) }
     var sessionIncorrect by remember { mutableIntStateOf(0) }
     var hasProcessedCards by remember { mutableStateOf(false) }
+    var initialTotal by remember { mutableIntStateOf(0) }
+
+    LaunchedEffect(dueFlashcards) {
+        if (initialTotal == 0 && dueFlashcards != null && dueFlashcards.isNotEmpty()) {
+            initialTotal = dueFlashcards.size
+        }
+    }
 
     DisposableEffect(context) {
         val ttsInstance = TextToSpeech(context) { status ->
@@ -100,7 +107,7 @@ fun ReviewScreen(
                 Text(text = "No cards due.")
             } else {
                 val currentCount = sessionCorrect + sessionIncorrect + 1
-                val totalCount = dueFlashcards.size + sessionCorrect + sessionIncorrect
+                val totalCount = if (initialTotal > 0) initialTotal else dueFlashcards.size + sessionCorrect + sessionIncorrect
                 Text(
                     text = "$currentCount / $totalCount",
                     style = MaterialTheme.typography.bodyMedium,
