@@ -92,6 +92,22 @@ class FlashcardRepository(
         }
     }
 
+    fun getAllDueFlashcards(): Flow<List<Flashcard>> {
+        return flashcardDao.getAllDueFlashcards(System.currentTimeMillis()).map { entities ->
+            entities.map { entity ->
+                Flashcard(
+                    entity.id,
+                    entity.deckId,
+                    entity.front,
+                    entity.back,
+                    entity.dueDate,
+                    entity.interval,
+                    entity.easeFactor
+                )
+            }
+        }
+    }
+
     suspend fun addFlashcard(deckId: Int, front: String, back: String) {
         val entity = FlashcardEntity(deckId = deckId, front = front, back = back)
         flashcardDao.addFlashcard(entity)

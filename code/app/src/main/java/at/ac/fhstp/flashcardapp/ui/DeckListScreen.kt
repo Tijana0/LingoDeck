@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Book
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.FileOpen
 import androidx.compose.material3.*
@@ -26,6 +27,7 @@ import at.ac.fhstp.flashcardapp.data.Deck
 @Composable
 fun DeckListScreen(
     decks: List<Deck>,
+    totalDueCount: Int,
     onDeckClick: (Deck) -> Unit,
     onAddDeckClick: () -> Unit,
     onDeleteDeckClick: (Deck) -> Unit,
@@ -135,7 +137,7 @@ fun DeckListScreen(
                 .padding(paddingValues)
         ) {
 
-            //GRADIENT HEADER
+            // DASHBOARD HEADER
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -150,25 +152,81 @@ fun DeckListScreen(
                     .padding(horizontal = 20.dp, vertical = 24.dp)
             ) {
                 Column {
-                    Text(
-                        text = "LingoDeck",
-                        style = MaterialTheme.typography.headlineLarge,
-                        color = Color.White
-                    )
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    Text(
-                        text = "Your language decks for smarter learning",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White.copy(alpha = 0.9f)
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = "LingoDeck",
+                                style = MaterialTheme.typography.headlineLarge,
+                                color = Color.White
+                            )
+                            Text(
+                                text = "Ready to learn?",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White.copy(alpha = 0.9f)
+                            )
+                        }
+                        
+                        // DASHBOARD STAT CARD
+                        if (totalDueCount > 0) {
+                            Card(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White.copy(alpha = 0.2f)
+                                ),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(12.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = "$totalDueCount",
+                                        style = MaterialTheme.typography.headlineMedium,
+                                        color = Color.White
+                                    )
+                                    Text(
+                                        text = "Due Today",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = Color.White.copy(alpha = 0.9f)
+                                    )
+                                }
+                            }
+                        } else {
+                             Card(
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White.copy(alpha = 0.2f)
+                                ),
+                                shape = RoundedCornerShape(16.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(12.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Icon(
+                                        Icons.Default.Check,
+                                        contentDescription = null,
+                                        tint = Color.White,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    Text(
+                                        text = "All Done!",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = Color.White.copy(alpha = 0.9f)
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
 // CONTENT
+
             if (decks.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),

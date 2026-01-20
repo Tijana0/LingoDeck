@@ -10,6 +10,7 @@ import at.ac.fhstp.flashcardapp.logic.SpacedRepetition
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -20,6 +21,14 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
+        )
+
+    val totalDueFlashcardsCount: StateFlow<Int> = repository.getAllDueFlashcards()
+        .map { it.size }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = 0
         )
 
     private val _reviewCards = kotlinx.coroutines.flow.MutableStateFlow<List<Flashcard>>(emptyList())
