@@ -18,7 +18,7 @@ abstract class FlashcardDatabase : RoomDatabase() {
         fun getDatabase(context: Context): FlashcardDatabase {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, FlashcardDatabase::class.java, "flashcard_database")
-                    // .fallbackToDestructiveMigration() // Disabled to prevent accidental data loss
+                    .fallbackToDestructiveMigration()
                     .build()
                     .also { Instance = it }
             }
