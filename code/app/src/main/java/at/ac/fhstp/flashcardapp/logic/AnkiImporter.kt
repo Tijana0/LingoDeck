@@ -51,9 +51,11 @@ class AnkiImporter(
                         val flds = cursor.getString(fldsIndex)
                         val parts = flds.split("\u001f")
                         if (parts.size >= 2) {
-                            val front = parts[0]
-                            val back = parts[1]
-                            repository.addFlashcard(newDeckId, front, back)
+                            val front = stripHtml(parts[0])
+                            val back = stripHtml(parts[1])
+                            if (front.isNotBlank() && back.isNotBlank()) {
+                                repository.addFlashcard(newDeckId, front, back)
+                            }
                         }
                     }
                 }
@@ -65,5 +67,21 @@ class AnkiImporter(
                 tempFile.delete()
             }
         }
+    }
+
+    private fun stripHtml(html: String): String {
+        return html
+            .replace(Regex("<br\\s*/?>", RegexOption.IGNORE_CASE), "\n")
+            .replace(Regex("<div>", RegexOption.IGNORE_CASE), "\n")
+            .replace(Regex("</div>", RegexOption.IGNORE_CASE), "")
+            .replace(Regex("<p>", RegexOption.IGNORE_CASE), "\n")
+            .replace(Regex("</p>", RegexOption.IGNORE_CASE), "")
+            .replace(Regex("<.*?>"), "") // Remove remaining tags
+            .replace("&nbsp;", " ")
+            .replace("&lt;", "<")
+            .replace("&gt;", ">")
+            .replace("&amp;", "&")
+            .replace("&quot;", "\"")
+            .trim()
     }
 }
