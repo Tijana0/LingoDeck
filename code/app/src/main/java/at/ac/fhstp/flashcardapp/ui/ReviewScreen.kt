@@ -81,6 +81,8 @@ fun ReviewScreen(
     }
 
     fun speak(text: String, fallbackLangCode: String) {
+        if (fallbackLangCode == "other") return
+
         if (isTtsReady && text.isNotBlank()) {
             languageIdentifier.identifyLanguage(text)
                 .addOnSuccessListener { languageCode ->
