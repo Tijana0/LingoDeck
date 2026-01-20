@@ -25,33 +25,35 @@ data class DeckUiModel(
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class FlashcardViewModel(private val repository: FlashcardRepository) : ViewModel() {
 
-    val decksUiState: StateFlow<List<DeckUiModel>> = repository.allDecks
-        .combine(repository.getDeckStats()) { decks, stats ->
-            decks to stats
-        }
-        .combine(repository.allDecks.flatMapLatest { decks ->
+    val decksUiState: StateFlow<List<DeckUiModel>> = combine(
+        repository.allDecks,
+        repository.getDeckStats()
+    ) { decks, stats ->
+        decks to stats
+    }.flatMapLatest { (decks, stats) ->
+        if (decks.isEmpty()) {
+            kotlinx.coroutines.flow.flowOf(emptyList<DeckUiModel>())
+        } else {
             combine(decks.map { deck ->
-                repository.getReviewedCountToday(deck.id).map { count -> deck.id to count }
-            }) { it.toMap() }
-        }) { (decks, stats), reviewedToday ->
-            decks.map { deck ->
-                val deckStats = stats.find { it.deckId == deck.id }
-                val reviewedCount = reviewedToday[deck.id] ?: 0
-                val dailyLimit = 20
-                val remainingDue = (dailyLimit - reviewedCount).coerceAtLeast(0)
-                val totalDueInDb = deckStats?.dueCards ?: 0
-                
-                DeckUiModel(
-                    deck = deck,
-                    totalCards = deckStats?.totalCards ?: 0,
-                    dueCards = minOf(totalDueInDb, remainingDue)
-                )
-            }
-        }.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+                repository.getReviewedCountToday(deck.id).map { reviewedCount ->
+                    val deckStats = stats.find { it.deckId == deck.id }
+                    val dailyLimit = 20
+                    val remainingDue = (dailyLimit - reviewedCount).coerceAtLeast(0)
+                    val totalDueInDb = deckStats?.dueCards ?: 0
+
+                    DeckUiModel(
+                        deck = deck,
+                        totalCards = deckStats?.totalCards ?: 0,
+                        dueCards = minOf(totalDueInDb, remainingDue)
+                    )
+                }
+            }) { it.toList() }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     val totalDueFlashcardsCount: StateFlow<Int> = decksUiState
         .map { list -> list.sumOf { it.dueCards } }
