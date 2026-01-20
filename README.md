@@ -50,5 +50,5 @@ LingoDeck is a native Android flashcard application for language learning, built
 
 ## Team Members
 
-Tijana Mijatović
-Diana Simonicova
+* Tijana Mijatović
+* Diana Simonicova
