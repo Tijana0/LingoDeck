@@ -1,23 +1,42 @@
 package at.ac.fhstp.flashcardapp.ui
 
+import android.graphics.Paint
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import at.ac.fhstp.flashcardapp.data.Flashcard
+
+// --- Color Palette ---
+val BgDark = Color(0xFF161B22)
+val CardBg = Color(0xFF1E2330)
+val AccentPurple = Color(0xFF6C4AFF)
+val AccentBlue = Color(0xFF2979FF)
+val AccentGreen = Color(0xFF00E676)
+val AccentRed = Color(0xFFFF5252)
+val TextWhite = Color.White
+val TextGray = Color(0xFF8B949E)
+val GridLineColor = Color(0xFF30363D)
 
 @Composable
 fun DeckDetailScreen(
+    deckName: String,
     flashcards: List<Flashcard>,
     dueFlashcardsCount: Int,
     chartData: List<Pair<String, Int>>,
@@ -25,11 +44,12 @@ fun DeckDetailScreen(
     onStartPracticeClick: () -> Unit,
     onAddFlashcardClick: () -> Unit,
     onEditFlashcardClick: (Flashcard) -> Unit,
-    onDeleteFlashcardClick: (Flashcard) -> Unit
+    onDeleteFlashcardClick: (Flashcard) -> Unit,
+    onBackClick: () -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     var flashcardToDelete by remember { mutableStateOf<Flashcard?>(null) }
-    
+
     if (showDeleteDialog && flashcardToDelete != null) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
@@ -53,114 +73,391 @@ fun DeckDetailScreen(
                 ) {
                     Text("Cancel")
                 }
-            }
+            },
+            containerColor = CardBg,
+            titleContentColor = TextWhite,
+            textContentColor = TextGray
         )
     }
-    
+
     Scaffold(
-        bottomBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+        containerColor = BgDark,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddFlashcardClick,
+                containerColor = AccentPurple,
+                contentColor = Color.White,
+                shape = CircleShape
             ) {
-                if (flashcards.isNotEmpty()) {
-                    val isReview = dueFlashcardsCount > 0
-                    val count = if (isReview) minOf(dueFlashcardsCount, 20) else minOf(flashcards.size, 20)
-                    val label = if (isReview) "Start Study Session ($count)" else "Practice ($count)"
-                    
-                    ExtendedFloatingActionButton(
-                        onClick = if (isReview) onStartReviewClick else onStartPracticeClick,
-                        modifier = Modifier.weight(1f),
-                        containerColor = Color(0xFF6D5CFF),
-                        contentColor = Color.White,
-                        icon = { Icon(Icons.Default.PlayArrow, contentDescription = null) },
-                        text = { Text(label) }
-                    )
-                } else {
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-                FloatingActionButton(
-                    onClick = onAddFlashcardClick,
-                    containerColor = Color(0xFF6D5CFF),
-                    contentColor = Color.White
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = "Add flashcard")
-                }
+                Icon(Icons.Default.Add, contentDescription = "Add")
             }
-        }
+        },
+        floatingActionButtonPosition = FabPosition.EndOverlay
     ) { paddingValues ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(
-                text = "Upcoming Study Sessions:",
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Box(modifier = Modifier.padding(horizontal = 16.dp)) {
-                UpcomingReviewsChart(chartData)
+            // 1. Top Bar Section
+            item {
+                TopHeaderSection(deckName, onBackClick)
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "All Cards:",
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+
+            // 2. Statistics Row
+            item {
+                StatsRow(dueFlashcardsCount, flashcards.size)
+            }
+
+            // 3. Action Buttons
+            item {
+                ActionButtonsRow(
+                    onStartReviewClick = onStartReviewClick,
+                    onStartPracticeClick = onStartPracticeClick,
+                    dueCount = dueFlashcardsCount,
+                    totalCount = flashcards.size
+                )
+            }
+
+            // 4. Review History Chart
+            item {
+                ReviewHistoryCard(data = chartData)
+            }
+
+            // 5. Flashcards List Header
+            item {
+                Text(
+                    text = "Flashcards (${flashcards.size})",
+                    color = TextWhite,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(top = 8.dp, bottom = 8.dp)
+                )
+            }
+
+            // 6. Flashcards Items
+            items(flashcards) { card ->
+                DetailFlashcardItem(
+                    card = card,
+                    onEditClick = { onEditFlashcardClick(card) },
+                    onDeleteClick = {
+                        flashcardToDelete = card
+                        showDeleteDialog = true
+                    }
+                )
+            }
+
+            // Bottom spacer for scroll
+            item { Spacer(modifier = Modifier.height(80.dp)) }
+        }
+    }
+}
+
+@Composable
+fun TopHeaderSection(deckName: String, onBackClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = onBackClick) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = TextWhite
             )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        Column {
+            Text(
+                text = deckName,
+                color = TextWhite,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "Deck Details",
+                color = TextGray,
+                fontSize = 14.sp
+            )
+        }
+    }
+}
+
+@Composable
+fun StatsRow(dueCount: Int, totalCount: Int) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        StatCard(
+            modifier = Modifier.weight(1f),
+            icon = Icons.Default.CalendarToday,
+            value = dueCount.toString(),
+            label = "Due",
+            color = AccentBlue
+        )
+        StatCard(
+            modifier = Modifier.weight(1f),
+            icon = Icons.Default.ShowChart,
+            value = totalCount.toString(),
+            label = "Total",
+            color = AccentPurple
+        )
+        // Placeholder for Accuracy
+        StatCard(
+            modifier = Modifier.weight(1f),
+            icon = Icons.Default.TrendingUp,
+            value = "-",
+            label = "Accuracy",
+            color = AccentGreen
+        )
+    }
+}
+
+@Composable
+fun StatCard(
+    modifier: Modifier = Modifier,
+    icon: ImageVector,
+    value: String,
+    label: String,
+    color: Color
+) {
+    Card(
+        modifier = modifier.height(110.dp),
+        colors = CardDefaults.cardColors(containerColor = BgDark),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, color.copy(alpha = 0.3f))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(imageVector = icon, contentDescription = null, tint = color, modifier = Modifier.size(20.dp))
             Spacer(modifier = Modifier.height(8.dp))
-            LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp)) {
-                items(flashcards) { flashcard ->
-                    FlashcardItem(
-                        flashcard = flashcard,
-                        onEditClick = { onEditFlashcardClick(flashcard) },
-                        onDeleteClick = {
-                            flashcardToDelete = flashcard
-                            showDeleteDialog = true
-                        }
-                    )
-                }
+            Text(text = value, color = TextWhite, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Text(text = label, color = color, fontSize = 12.sp)
+        }
+    }
+}
+
+@Composable
+fun ActionButtonsRow(
+    onStartReviewClick: () -> Unit,
+    onStartPracticeClick: () -> Unit,
+    dueCount: Int,
+    totalCount: Int
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Button(
+            onClick = onStartReviewClick,
+            enabled = dueCount > 0,
+            modifier = Modifier.weight(1f),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = AccentPurple,
+                disabledContainerColor = AccentPurple.copy(alpha = 0.5f)
+            ),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text("Review ($dueCount)", color = TextWhite)
+        }
+        
+        OutlinedButton(
+            onClick = onStartPracticeClick,
+            enabled = totalCount > 0,
+            modifier = Modifier.weight(1f),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = AccentPurple),
+            border = BorderStroke(1.dp, AccentPurple),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text("Practice")
+        }
+    }
+}
+
+@Composable
+fun ReviewHistoryCard(data: List<Pair<String, Int>>) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = CardBg),
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(280.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "Upcoming Schedule",
+                color = TextWhite,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 10.dp)) {
+                ReviewChart(data = data)
             }
         }
     }
 }
 
 @Composable
-fun UpcomingReviewsChart(chartData: List<Pair<String, Int>>) {
-    val maxValue = chartData.maxOfOrNull { it.second } ?: 1
-    val barColor = Color(0xFF6D5CFF)
+fun ReviewChart(data: List<Pair<String, Int>>) {
+    if (data.isEmpty()) return
+    
+    val maxVal = data.maxOfOrNull { it.second }?.toFloat()?.coerceAtLeast(5f) ?: 5f
+    
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        val width = size.width
+        val height = size.height
+        val spacing = width / (data.size - 1)
+        val bottomMargin = 40f 
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.Bottom
+        // 1. Draw Grid Lines
+        val gridLines = 5
+        val stepY = (height - bottomMargin) / (gridLines - 1)
+        
+        for (i in 0 until gridLines) {
+            val y = stepY * i
+            drawLine(
+                color = GridLineColor,
+                start = Offset(30f, y),
+                end = Offset(width, y),
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
+            )
+            
+            drawContext.canvas.nativeCanvas.drawText(
+                (maxVal - (maxVal / (gridLines - 1) * i)).toInt().toString(),
+                0f,
+                y + 10f,
+                Paint().apply {
+                    color = android.graphics.Color.parseColor("#8B949E")
+                    textSize = 24f
+                }
+            )
+        }
+
+        // Path for the line
+        val path = Path()
+        
+        fun getY(value: Float): Float {
+            val drawableHeight = height - bottomMargin
+            return drawableHeight - (value / maxVal * drawableHeight)
+        }
+
+        data.forEachIndexed { index, point ->
+            val x = 50f + (index * ((width - 60f) / (data.size - 1)))
+            
+            // Draw X Labels
+            drawContext.canvas.nativeCanvas.drawText(
+                point.first,
+                x - 30f,
+                height, 
+                Paint().apply {
+                    color = android.graphics.Color.parseColor("#8B949E")
+                    textSize = 24f
+                }
+            )
+
+            val y = getY(point.second.toFloat())
+
+            if (index == 0) {
+                path.moveTo(x, y)
+            } else {
+                val prevX = 50f + ((index - 1) * ((width - 60f) / (data.size - 1)))
+                val prevY = getY(data[index - 1].second.toFloat())
+                val conX1 = (prevX + x) / 2f
+                path.cubicTo(conX1, prevY, conX1, y, x, y)
+            }
+        }
+
+        drawPath(
+            path = path,
+            color = AccentBlue,
+            style = Stroke(width = 4f, cap = StrokeCap.Round)
+        )
+
+        // Draw Dots
+        data.forEachIndexed { index, point ->
+            val x = 50f + (index * ((width - 60f) / (data.size - 1)))
+            val y = getY(point.second.toFloat())
+
+            drawCircle(Color(0xFF1E2330), radius = 10f, center = Offset(x, y))
+            drawCircle(AccentBlue, radius = 6f, center = Offset(x, y))
+        }
+    }
+}
+
+@Composable
+fun DetailFlashcardItem(
+    card: Flashcard,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = CardBg),
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        for ((day, count) in chartData) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Canvas(
-                    modifier = Modifier
-                        .width(20.dp)
-                        .height(80.dp)
-                ) {
-                    val barHeight = (count.toFloat() / maxValue) * size.height
-                    drawLine(
-                        color = barColor,
-                        start = Offset(x = center.x, y = size.height),
-                        end = Offset(x = center.x, y = size.height - barHeight),
-                        strokeWidth = 20f
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = card.front,
+                    color = TextWhite,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = card.back,
+                    color = TextGray,
+                    fontSize = 14.sp
+                )
+            }
+            Box {
+                IconButton(onClick = { expanded = true }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Options",
+                        tint = TextGray
                     )
                 }
-                Text(
-                    text = day,
-                    style = MaterialTheme.typography.bodySmall
-                )
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Edit") },
+                        onClick = {
+                            expanded = false
+                            onEditClick()
+                        },
+                        leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null) }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Delete") },
+                        onClick = {
+                            expanded = false
+                            onDeleteClick()
+                        },
+                        leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null) }
+                    )
+                }
             }
         }
     }

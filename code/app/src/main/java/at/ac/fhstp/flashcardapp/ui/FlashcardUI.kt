@@ -67,8 +67,12 @@ fun FlashcardApp(
                 val flashcards by viewModel.getFlashcardsForDeck(deckId).collectAsState(initial = emptyList())
                 val dueFlashcards by viewModel.getDueFlashcards(deckId).collectAsState(initial = emptyList())
                 val chartData = viewModel.getUpcomingReviewsChartData(flashcards)
+                
+                var deck by remember { mutableStateOf<at.ac.fhstp.flashcardapp.data.Deck?>(null) }
+                LaunchedEffect(deckId) { deck = viewModel.getDeckById(deckId) }
 
                 DeckDetailScreen(
+                    deckName = deck?.name ?: "Loading...",
                     flashcards = flashcards,
                     dueFlashcardsCount = dueFlashcards.size,
                     chartData = chartData,
@@ -86,7 +90,8 @@ fun FlashcardApp(
                     },
                     onDeleteFlashcardClick = { flashcard ->
                         viewModel.deleteFlashcard(flashcard)
-                    }
+                    },
+                    onBackClick = { navController.popBackStack() }
                 )
             }
             composable(
