@@ -67,6 +67,7 @@ fun FlashcardApp(
                 val flashcards by viewModel.getFlashcardsForDeck(deckId).collectAsState(initial = emptyList())
                 val dueFlashcards by viewModel.getDueFlashcards(deckId).collectAsState(initial = emptyList())
                 val chartData = viewModel.getUpcomingReviewsChartData(flashcards)
+                val averageAccuracy by viewModel.getDeckAccuracy(deckId).collectAsState(initial = null)
                 
                 var deck by remember { mutableStateOf<at.ac.fhstp.flashcardapp.data.Deck?>(null) }
                 LaunchedEffect(deckId) { deck = viewModel.getDeckById(deckId) }
@@ -76,6 +77,7 @@ fun FlashcardApp(
                     flashcards = flashcards,
                     dueFlashcardsCount = dueFlashcards.size,
                     chartData = chartData,
+                    averageAccuracy = averageAccuracy,
                     onStartReviewClick = {
                         navController.navigate("${Routes.Review.name}/$deckId?practice=false")
                     },
@@ -124,6 +126,9 @@ fun FlashcardApp(
                     },
                     onReviewComplete = {
                         navController.popBackStack()
+                    },
+                    onSessionFinished = { correct, incorrect ->
+                        viewModel.logSession(deckId, correct, incorrect)
                     }
                 )
             }

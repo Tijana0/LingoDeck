@@ -4,12 +4,15 @@ import at.ac.fhstp.flashcardapp.db.DeckDao
 import at.ac.fhstp.flashcardapp.db.DeckEntity
 import at.ac.fhstp.flashcardapp.db.FlashcardEntity
 import at.ac.fhstp.flashcardapp.db.FlashcardDao
+import at.ac.fhstp.flashcardapp.db.StudySessionDao
+import at.ac.fhstp.flashcardapp.db.StudySessionEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class FlashcardRepository(
     private val flashcardDao: FlashcardDao,
-    private val deckDao: DeckDao
+    private val deckDao: DeckDao,
+    private val studySessionDao: StudySessionDao
 ) {
 
     val allDecks: Flow<List<Deck>> = deckDao.getAllDecks().map { entities ->
@@ -162,5 +165,19 @@ class FlashcardRepository(
 
     fun getDeckStats(): Flow<List<at.ac.fhstp.flashcardapp.db.DeckStats>> {
         return flashcardDao.getDeckStats(System.currentTimeMillis())
+    }
+
+    suspend fun logSession(deckId: Int, correct: Int, incorrect: Int) {
+        val session = StudySessionEntity(
+            deckId = deckId,
+            date = System.currentTimeMillis(),
+            correct = correct,
+            incorrect = incorrect
+        )
+        studySessionDao.insertSession(session)
+    }
+
+    fun getAverageAccuracy(deckId: Int): Flow<Float?> {
+        return studySessionDao.getAverageAccuracy(deckId)
     }
 }

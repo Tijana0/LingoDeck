@@ -42,6 +42,7 @@ fun DeckDetailScreen(
     flashcards: List<Flashcard>,
     dueFlashcardsCount: Int,
     chartData: List<Pair<String, Int>>,
+    averageAccuracy: Float?,
     onStartReviewClick: () -> Unit,
     onStartPracticeClick: () -> Unit,
     onAddFlashcardClick: () -> Unit,
@@ -110,7 +111,8 @@ fun DeckDetailScreen(
 
             // 2. Statistics Row
             item {
-                StatsRow(dueFlashcardsCount, flashcards.size)
+                val accuracyText = if (averageAccuracy != null) "${"%.0f".format(averageAccuracy)}%" else "-"
+                StatsRow(dueFlashcardsCount, flashcards.size, accuracyText)
             }
 
             // 3. Action Buttons
@@ -190,7 +192,7 @@ fun TopHeaderSection(deckName: String, onBackClick: () -> Unit) {
 }
 
 @Composable
-fun StatsRow(dueCount: Int, totalCount: Int) {
+fun StatsRow(dueCount: Int, totalCount: Int, accuracy: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -209,11 +211,10 @@ fun StatsRow(dueCount: Int, totalCount: Int) {
             label = "Total",
             color = AccentPurple
         )
-        // Placeholder for Accuracy
         StatCard(
             modifier = Modifier.weight(1f),
             icon = Icons.Default.TrendingUp,
-            value = "-",
+            value = accuracy,
             label = "Accuracy",
             color = AccentGreen
         )
