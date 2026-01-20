@@ -65,4 +65,5 @@ dependencies {
     ksp("androidx.room:room-compiler:$room_version")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0")
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("com.google.mlkit:language-id:17.0.6")
 }

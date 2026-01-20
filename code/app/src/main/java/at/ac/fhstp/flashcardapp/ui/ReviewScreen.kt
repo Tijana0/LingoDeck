@@ -30,6 +30,8 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 import kotlin.math.roundToInt
 
+import com.google.mlkit.nl.languageid.LanguageIdentification
+
 @Composable
 fun ReviewScreen(
     dueFlashcards: List<Flashcard>?,
@@ -49,6 +51,7 @@ fun ReviewScreen(
     val context = LocalContext.current
     var tts by remember { mutableStateOf<TextToSpeech?>(null) }
     var isTtsReady by remember { mutableStateOf(false) }
+    val languageIdentifier = remember { LanguageIdentification.getClient() }
 
     var sessionCorrect by remember { mutableIntStateOf(0) }
     var sessionIncorrect by remember { mutableIntStateOf(0) }
@@ -73,13 +76,22 @@ fun ReviewScreen(
         onDispose {
             ttsInstance.stop()
             ttsInstance.shutdown()
+            languageIdentifier.close()
         }
     }
 
-    fun speak(text: String, langCode: String) {
-        if (isTtsReady) {
-            tts?.language = Locale(langCode)
-            tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+    fun speak(text: String, fallbackLangCode: String) {
+        if (isTtsReady && text.isNotBlank()) {
+            languageIdentifier.identifyLanguage(text)
+                .addOnSuccessListener { languageCode ->
+                    val locale = if (languageCode == "und") Locale(fallbackLangCode) else Locale(languageCode)
+                    tts?.language = locale
+                    tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+                }
+                .addOnFailureListener {
+                    tts?.language = Locale(fallbackLangCode)
+                    tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+                }
         }
     }
 
