@@ -28,8 +28,14 @@ class FlashcardRepository(
         deckDao.deleteDeck(entity)
     }
 
+    suspend fun updateDeck(deck: Deck) {
+        val entity = DeckEntity(id = deck.id, name = deck.name, frontLanguage = deck.frontLanguage, backLanguage = deck.backLanguage)
+        deckDao.updateDeck(entity)
+    }
+
     suspend fun getDeckById(deckId: Int): Deck? {
-        return null 
+        val entity = deckDao.getDeckById(deckId)
+        return entity?.let { Deck(it.id, it.name, it.frontLanguage, it.backLanguage) }
     }
 
     fun getFlashcardsForDeck(deckId: Int): Flow<List<Flashcard>> {

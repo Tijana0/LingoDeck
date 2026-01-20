@@ -14,18 +14,19 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Book
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FileOpen
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import at.ac.fhstp.flashcardapp.data.Deck
-
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import at.ac.fhstp.flashcardapp.R
+import at.ac.fhstp.flashcardapp.data.Deck
 
 @Composable
 fun DeckListScreen(
@@ -33,6 +34,7 @@ fun DeckListScreen(
     totalDueCount: Int,
     onDeckClick: (Deck) -> Unit,
     onAddDeckClick: () -> Unit,
+    onEditDeckClick: (Deck) -> Unit,
     onDeleteDeckClick: (Deck) -> Unit,
     onImportAnkiClick: (android.net.Uri, String) -> Unit
 ) {
@@ -323,18 +325,42 @@ fun DeckListScreen(
                                             )
                                         }
 
-                                        // DELETE BUTTON
-                                        IconButton(
-                                            onClick = {
-                                                deckToDelete = deck
-                                                showDeleteDialog = true
+                                        // MENU BUTTON
+                                        Box {
+                                            var expanded by remember { mutableStateOf(false) }
+                                            IconButton(onClick = { expanded = true }) {
+                                                Icon(
+                                                    Icons.Default.MoreVert,
+                                                    contentDescription = "Options",
+                                                    tint = Color.White
+                                                )
                                             }
-                                        ) {
-                                            Icon(
-                                                Icons.Default.Delete,
-                                                contentDescription = "Delete deck",
-                                                tint = Color(0xFFFF6B6B)
-                                            )
+                                            DropdownMenu(
+                                                expanded = expanded,
+                                                onDismissRequest = { expanded = false }
+                                            ) {
+                                                DropdownMenuItem(
+                                                    text = { Text("Edit") },
+                                                    onClick = {
+                                                        expanded = false
+                                                        onEditDeckClick(deck)
+                                                    },
+                                                    leadingIcon = {
+                                                        Icon(Icons.Default.Edit, contentDescription = null)
+                                                    }
+                                                )
+                                                DropdownMenuItem(
+                                                    text = { Text("Delete") },
+                                                    onClick = {
+                                                        expanded = false
+                                                        deckToDelete = deck
+                                                        showDeleteDialog = true
+                                                    },
+                                                    leadingIcon = {
+                                                        Icon(Icons.Default.Delete, contentDescription = null)
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
 

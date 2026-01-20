@@ -93,6 +93,17 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
         }
     }
 
+    fun updateDeck(deck: Deck, name: String, frontLanguage: String, backLanguage: String, onComplete: () -> Unit) {
+        viewModelScope.launch {
+            repository.updateDeck(deck.copy(name = name, frontLanguage = frontLanguage, backLanguage = backLanguage))
+            onComplete()
+        }
+    }
+    
+    suspend fun getDeckById(deckId: Int): Deck? {
+        return repository.getDeckById(deckId)
+    }
+
     fun deleteDeck(deck: Deck) {
         viewModelScope.launch {
             repository.deleteDeck(deck)

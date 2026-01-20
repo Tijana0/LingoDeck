@@ -10,9 +10,42 @@ import at.ac.fhstp.flashcardapp.R
 
 @Composable
 fun AddDeckScreen(onSave: (String, String, String) -> Unit) {
-    var deckName by remember { mutableStateOf("") }
-    var frontLang by remember { mutableStateOf("de") }
-    var backLang by remember { mutableStateOf("en") }
+    DeckForm(
+        title = "Add a new deck",
+        buttonText = "Save",
+        onSave = onSave
+    )
+}
+
+@Composable
+fun EditDeckScreen(
+    initialName: String,
+    initialFront: String,
+    initialBack: String,
+    onSave: (String, String, String) -> Unit
+) {
+    DeckForm(
+        title = "Edit deck",
+        buttonText = "Update",
+        initialName = initialName,
+        initialFront = initialFront,
+        initialBack = initialBack,
+        onSave = onSave
+    )
+}
+
+@Composable
+fun DeckForm(
+    title: String,
+    buttonText: String,
+    initialName: String = "",
+    initialFront: String = "de",
+    initialBack: String = "en",
+    onSave: (String, String, String) -> Unit
+) {
+    var deckName by remember { mutableStateOf(initialName) }
+    var frontLang by remember { mutableStateOf(initialFront) }
+    var backLang by remember { mutableStateOf(initialBack) }
 
     val languages = listOf(
         "en" to "English",
@@ -47,7 +80,7 @@ fun AddDeckScreen(onSave: (String, String, String) -> Unit) {
             .padding(top = 32.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(text = "Add a new deck", style = MaterialTheme.typography.headlineMedium)
+        Text(text = title, style = MaterialTheme.typography.headlineMedium)
         OutlinedTextField(
             value = deckName,
             onValueChange = { deckName = it },
@@ -78,7 +111,7 @@ fun AddDeckScreen(onSave: (String, String, String) -> Unit) {
             onClick = { if (deckName.isNotBlank()) onSave(deckName, frontLang, backLang) },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Save")
+            Text(buttonText)
         }
     }
 }

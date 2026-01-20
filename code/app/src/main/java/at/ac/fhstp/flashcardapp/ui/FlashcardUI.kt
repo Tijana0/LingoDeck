@@ -24,6 +24,7 @@ enum class Routes {
     DeckDetail,
     Review,
     AddDeck,
+    EditDeck,
     AddFlashcard,
     EditFlashcard
 }
@@ -49,6 +50,9 @@ fun FlashcardApp(
                         navController.navigate("${Routes.DeckDetail.name}/${deck.id}")
                     },
                     onAddDeckClick = { navController.navigate(Routes.AddDeck.name) },
+                    onEditDeckClick = { deck ->
+                        navController.navigate("${Routes.EditDeck.name}/${deck.id}")
+                    },
                     onDeleteDeckClick = { deck -> viewModel.deleteDeck(deck) },
                     onImportAnkiClick = { uri, name ->
                         viewModel.importAnkiDeck(context, uri, name)
@@ -126,6 +130,34 @@ fun FlashcardApp(
                         }
                     }
                 )
+            }
+            composable(
+                route = "${Routes.EditDeck.name}/{deckId}",
+                arguments = listOf(navArgument("deckId") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val deckId = backStackEntry.arguments?.getInt("deckId") ?: 0
+                var deck by remember { mutableStateOf<at.ac.fhstp.flashcardapp.data.Deck?>(null) }
+                
+                LaunchedEffect(deckId) {
+                    deck = viewModel.getDeckById(deckId)
+                }
+
+                if (deck != null) {
+                    EditDeckScreen(
+                        initialName = deck!!.name,
+                        initialFront = deck!!.frontLanguage,
+                        initialBack = deck!!.backLanguage,
+                        onSave = { name, front, back ->
+                            viewModel.updateDeck(deck!!, name, front, back) {
+                                navController.popBackStack()
+                            }
+                        }
+                    )
+                } else {
+                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                }
             }
             composable(
                 route = "${Routes.AddFlashcard.name}/{deckId}",
