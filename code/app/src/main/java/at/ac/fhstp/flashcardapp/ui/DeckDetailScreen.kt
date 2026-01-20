@@ -73,13 +73,19 @@ fun DeckDetailScreen(
                     ExtendedFloatingActionButton(
                         onClick = if (isReview) onStartReviewClick else onStartPracticeClick,
                         modifier = Modifier.weight(1f),
+                        containerColor = Color(0xFF6D5CFF),
+                        contentColor = Color.White,
                         icon = { Icon(Icons.Default.PlayArrow, contentDescription = null) },
                         text = { Text(label) }
                     )
                 } else {
                     Spacer(modifier = Modifier.weight(1f))
                 }
-                FloatingActionButton(onClick = onAddFlashcardClick) {
+                FloatingActionButton(
+                    onClick = onAddFlashcardClick,
+                    containerColor = Color(0xFF6D5CFF),
+                    contentColor = Color.White
+                ) {
                     Icon(Icons.Default.Add, contentDescription = "Add flashcard")
                 }
             }
@@ -125,7 +131,7 @@ fun DeckDetailScreen(
 @Composable
 fun UpcomingReviewsChart(chartData: List<Pair<String, Int>>) {
     val maxValue = chartData.maxOfOrNull { it.second } ?: 1
-    val barColor = MaterialTheme.colorScheme.tertiary
+    val barColor = Color(0xFF6D5CFF)
 
     Row(
         modifier = Modifier
