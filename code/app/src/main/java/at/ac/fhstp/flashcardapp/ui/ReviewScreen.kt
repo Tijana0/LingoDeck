@@ -145,11 +145,13 @@ fun ReviewScreen(
                 }
 
                 if (deck != null) {
-                    LaunchedEffect(flashcard, showBack, isTtsReady) {
-                        if (isTtsReady) {
-                            val textToSpeak = if (showBack) flashcard.back else flashcard.front
-                            val lang = if (showBack) deck.backLanguage else deck.frontLanguage
-                            speak(textToSpeak, lang)
+                    val currentLang = if (showBack) deck.backLanguage else deck.frontLanguage
+                    if (currentLang != "other") {
+                        LaunchedEffect(flashcard, showBack, isTtsReady) {
+                            if (isTtsReady) {
+                                val textToSpeak = if (showBack) flashcard.back else flashcard.front
+                                speak(textToSpeak, currentLang)
+                            }
                         }
                     }
                 }
@@ -284,23 +286,25 @@ fun ReviewScreen(
                             )
                             Spacer(modifier = Modifier.height(24.dp))
                             if (deck != null) {
-                                FilledIconButton(
-                                    onClick = {
-                                        val textToSpeak = if (showBack) flashcard.back else flashcard.front
-                                        val lang = if (showBack) deck.backLanguage else deck.frontLanguage
-                                        speak(textToSpeak, lang)
-                                    },
-                                    modifier = Modifier.size(56.dp),
-                                    colors = IconButtonDefaults.filledIconButtonColors(
-                                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                    )
-                                ) {
-                                    Icon(
-                                        Icons.AutoMirrored.Filled.VolumeUp,
-                                        contentDescription = "Speak",
-                                        modifier = Modifier.size(32.dp)
-                                    )
+                                val currentLang = if (showBack) deck.backLanguage else deck.frontLanguage
+                                if (currentLang != "other") {
+                                    FilledIconButton(
+                                        onClick = {
+                                            val textToSpeak = if (showBack) flashcard.back else flashcard.front
+                                            speak(textToSpeak, currentLang)
+                                        },
+                                        modifier = Modifier.size(56.dp),
+                                        colors = IconButtonDefaults.filledIconButtonColors(
+                                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                    ) {
+                                        Icon(
+                                            Icons.AutoMirrored.Filled.VolumeUp,
+                                            contentDescription = "Speak",
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
