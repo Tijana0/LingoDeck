@@ -2,6 +2,7 @@ package at.ac.fhstp.flashcardapp.ui
 
 import android.speech.tts.TextToSpeech
 import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -76,6 +77,24 @@ fun ReviewScreen(
     var sessionIncorrect by remember { mutableIntStateOf(0) }
     var hasProcessedCards by remember { mutableStateOf(false) }
     var initialTotal by remember { mutableIntStateOf(0) }
+
+    // Swipe progress (-1 = left, +1 = right)
+    val swipeProgress = (offset.value / threshold).coerceIn(-1f, 1f)
+
+    // Border color reacts to swipe direction
+    val borderColor = when {
+        swipeProgress > 0f ->
+            Color(0xFF00C853).copy(alpha = swipeProgress) // green
+
+        swipeProgress < 0f ->
+            Color(0xFFFF5252).copy(alpha = -swipeProgress) // red
+
+        else ->
+            Color(0xFF7C4DFF).copy(alpha = 0.6f) // idle purple
+    }
+
+    // Border thickness increases while dragging
+    val borderWidth = (2.dp + (6.dp * kotlin.math.abs(swipeProgress)))
 
     LaunchedEffect(dueFlashcards) {
         if (initialTotal == 0 && dueFlashcards != null && dueFlashcards.isNotEmpty()) {
@@ -228,29 +247,7 @@ fun ReviewScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(250.dp)
-                            .drawBehind {
-                                val strokeWidth = 8.dp.toPx()
-                                val currentOffset = offset.value
-
-                                if (currentOffset <= 0) {
-                                    drawLine(
-                                        color = Color.Red,
-                                        start = Offset(0f, 0f),
-                                        end = Offset(0f, size.height),
-                                        strokeWidth = strokeWidth
-                                    )
-                                }
-
-                                if (currentOffset >= 0) {
-                                    drawLine(
-                                        color = Color.Green,
-                                        start = Offset(size.width, 0f),
-                                        end = Offset(size.width, size.height),
-                                        strokeWidth = strokeWidth
-                                    )
-                                }
-                            }
-                            .padding(16.dp)
+                            .padding(horizontal = 16.dp)
                             .offset { IntOffset(offset.value.roundToInt(), 0) }
                             .pointerInput(hasFlipped) {
                                 detectHorizontalDragGestures(
@@ -264,30 +261,30 @@ fun ReviewScreen(
                                                         duration = SnackbarDuration.Short
                                                     )
                                                 }
-                                                delay(1500) // ~3x shorter than default Short (4s)
+                                                delay(1500)
                                                 snackJob.cancel()
                                                 offset.animateTo(0f)
                                                 return@launch
                                             }
 
-                                            if (offset.value > threshold) {
-                                                sessionCorrect++
-                                                hasProcessedCards = true
-                                                // Swipe Right (Correct)
-                                                offset.animateTo(screenWidth)
-                                                onAnswer(flashcard, true)
-                                                // State reset handled by LaunchedEffect(flashcard)
-                                                offset.snapTo(0f)
-                                            } else if (offset.value < -threshold) {
-                                                sessionIncorrect++
-                                                hasProcessedCards = true
-                                                // Swipe Left (Wrong)
-                                                offset.animateTo(-screenWidth)
-                                                onAnswer(flashcard, false)
-                                                // State reset handled by LaunchedEffect(flashcard)
-                                                offset.snapTo(0f)
-                                            } else {
-                                                offset.animateTo(0f)
+                                            when {
+                                                offset.value > threshold -> {
+                                                    sessionCorrect++
+                                                    hasProcessedCards = true
+                                                    offset.animateTo(screenWidth)
+                                                    onAnswer(flashcard, true)
+                                                    offset.snapTo(0f)
+                                                }
+
+                                                offset.value < -threshold -> {
+                                                    sessionIncorrect++
+                                                    hasProcessedCards = true
+                                                    offset.animateTo(-screenWidth)
+                                                    onAnswer(flashcard, false)
+                                                    offset.snapTo(0f)
+                                                }
+
+                                                else -> offset.animateTo(0f)
                                             }
                                         }
                                     },
@@ -297,15 +294,21 @@ fun ReviewScreen(
                                 ) { change, dragAmount ->
                                     change.consume()
                                     if (hasFlipped) {
-                                        scope.launch { offset.snapTo(offset.value + dragAmount) }
+                                        scope.launch {
+                                            offset.snapTo(offset.value + dragAmount)
+                                        }
                                     }
                                 }
                             }
                             .clickable {
                                 showBack = !showBack
-                                if (showBack) hasFlipped = true 
+                                if (showBack) hasFlipped = true
                             },
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                        shape = RoundedCornerShape(28.dp),
+                        border = BorderStroke(borderWidth, borderColor),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        )
                     ) {
                         Column(
                             modifier = Modifier.fillMaxSize(),
