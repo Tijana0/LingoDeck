@@ -10,9 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import at.ac.fhstp.flashcardapp.R
-
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.SwapVert
+import at.ac.fhstp.flashcardapp.ui.theme.AccentPurple
 
 @Composable
 fun AddDeckScreen(
@@ -201,25 +199,6 @@ fun FlashcardForm(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp)
         )
-
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            IconButton(
-                onClick = {
-                    val temp = front
-                    front = back
-                    back = temp
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.SwapVert,
-                    contentDescription = "Swap",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-            }
-        }
 
         OutlinedTextField(
             value = back,
