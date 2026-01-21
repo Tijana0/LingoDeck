@@ -137,17 +137,30 @@ fun ReviewScreen(
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.Start
-            ) {
-                IconButton(onClick = onReviewComplete) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Exit Session",
-                        tint = Color.Gray
+            if (dueFlashcards != null && dueFlashcards.isNotEmpty()) {
+                val totalCount = if (initialTotal > 0) initialTotal else dueFlashcards.size + sessionCorrect + sessionIncorrect
+                val currentCount = minOf(sessionCorrect + sessionIncorrect + 1, totalCount)
+                
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = onReviewComplete) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Exit Session",
+                            tint = Color.Gray
+                        )
+                    }
+                    
+                    Text(
+                        text = "$currentCount / $totalCount",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(end = 8.dp)
                     )
                 }
             }
@@ -164,17 +177,6 @@ fun ReviewScreen(
             } else if (dueFlashcards.isEmpty()) {
                 Text(text = "No cards due.")
             } else {
-                val totalCount = if (initialTotal > 0) initialTotal else dueFlashcards.size + sessionCorrect + sessionIncorrect
-                val currentCount = minOf(sessionCorrect + sessionIncorrect + 1, totalCount)
-                Text(
-                    text = "$currentCount / $totalCount",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(16.dp)
-                )
-
                 val flashcard = dueFlashcards.first()
 
                 LaunchedEffect(flashcard) {
