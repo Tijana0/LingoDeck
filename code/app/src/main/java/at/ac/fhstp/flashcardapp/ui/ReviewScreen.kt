@@ -135,7 +135,23 @@ fun ReviewScreen(
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        topBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                IconButton(onClick = onReviewComplete) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Exit Session",
+                        tint = Color.Gray
+                    )
+                }
+            }
+        }
     ) { paddingValues ->
         Box(
             modifier = Modifier
