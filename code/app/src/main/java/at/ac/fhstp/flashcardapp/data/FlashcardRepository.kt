@@ -118,7 +118,7 @@ class FlashcardRepository(
     }
 
     suspend fun addFlashcard(deckId: Int, front: String, back: String) {
-        val entity = FlashcardEntity(deckId = deckId, front = front, back = back, dueDate = 0)
+        val entity = FlashcardEntity(deckId = deckId, front = front, back = back)
         flashcardDao.addFlashcard(entity)
     }
 
