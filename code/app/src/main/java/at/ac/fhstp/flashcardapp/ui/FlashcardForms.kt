@@ -136,7 +136,7 @@ fun DeckForm(
                 onClick = { if (deckName.isNotBlank()) onSave(deckName, frontLang, backLang) },
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6D5CFF))
+                colors = ButtonDefaults.buttonColors(containerColor = AccentPurple)
             ) {
                 Text(buttonText)
             }
@@ -225,7 +225,7 @@ fun FlashcardForm(
                 onClick = { if (front.isNotBlank()) onSave(front, back) },
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6D5CFF))
+                colors = ButtonDefaults.buttonColors(containerColor = AccentPurple)
             ) {
                 Text(buttonText)
             }
