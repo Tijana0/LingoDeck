@@ -184,11 +184,12 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
     }
 
     fun processAnswer(flashcard: Flashcard, isCorrect: Boolean) {
+        // Optimistic update: Remove card immediately to update UI
+        _reviewCards.value = _reviewCards.value.filter { it.id != flashcard.id }
+
         viewModelScope.launch {
             val updatedFlashcard = SpacedRepetition.processAnswer(flashcard, isCorrect)
             repository.updateFlashcard(updatedFlashcard)
-            
-            _reviewCards.value = _reviewCards.value.filter { it.id != flashcard.id }
         }
     }
 
