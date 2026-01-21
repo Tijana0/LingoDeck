@@ -163,7 +163,8 @@ fun ReviewScreen(
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription = "Exit Session",
-                            tint = Color.Gray
+                            tint = Color.Gray,
+                            modifier = Modifier.size(28.dp)
                         )
                     }
 
