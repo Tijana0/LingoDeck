@@ -301,8 +301,8 @@ fun DeckListScreen(
                                                     .background(
                                                         Brush.linearGradient(
                                                             listOf(
-                                                                Color(0xFF6D5CFF),
-                                                                Color(0xFF8B5CF6)
+                                                                AccentPurple,
+                                                                Color(0xFF8B5CF6) // Keep secondary gradient color or standardize?
                                                             )
                                                         ),
                                                         RoundedCornerShape(14.dp)
