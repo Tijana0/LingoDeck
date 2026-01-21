@@ -72,7 +72,7 @@ class FlashcardRepository(
     }
 
     fun getDueFlashcards(deckId: Int): Flow<List<Flashcard>> {
-        return flashcardDao.getDueFlashcards(deckId, System.currentTimeMillis()).map { entities ->
+        return flashcardDao.getDueFlashcards(deckId).map { entities ->
             entities.map { entity ->
                 Flashcard(
                     entity.id,
@@ -88,7 +88,7 @@ class FlashcardRepository(
     }
 
     suspend fun getDueFlashcardsList(deckId: Int): List<Flashcard> {
-        return flashcardDao.getDueFlashcardsList(deckId, System.currentTimeMillis()).map { entity ->
+        return flashcardDao.getDueFlashcardsList(deckId).map { entity ->
             Flashcard(
                 entity.id,
                 entity.deckId,
@@ -102,7 +102,7 @@ class FlashcardRepository(
     }
 
     fun getAllDueFlashcards(): Flow<List<Flashcard>> {
-        return flashcardDao.getAllDueFlashcards(System.currentTimeMillis()).map { entities ->
+        return flashcardDao.getAllDueFlashcards().map { entities ->
             entities.map { entity ->
                 Flashcard(
                     entity.id,
@@ -164,7 +164,7 @@ class FlashcardRepository(
     }
 
     fun getDeckStats(): Flow<List<at.ac.fhstp.flashcardapp.db.DeckStats>> {
-        return flashcardDao.getDeckStats(System.currentTimeMillis())
+        return flashcardDao.getDeckStats()
     }
 
     suspend fun logSession(deckId: Int, correct: Int, incorrect: Int) {
