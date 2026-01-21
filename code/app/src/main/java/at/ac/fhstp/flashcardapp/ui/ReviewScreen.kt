@@ -135,36 +135,7 @@ fun ReviewScreen(
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
-        topBar = {
-            if (dueFlashcards != null && dueFlashcards.isNotEmpty()) {
-                val totalCount = if (initialTotal > 0) initialTotal else dueFlashcards.size + sessionCorrect + sessionIncorrect
-                val currentCount = minOf(sessionCorrect + sessionIncorrect + 1, totalCount)
-                
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = onReviewComplete) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Exit Session",
-                            tint = Color.Gray
-                        )
-                    }
-                    
-                    Text(
-                        text = "$currentCount / $totalCount",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                }
-            }
-        }
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -177,13 +148,33 @@ fun ReviewScreen(
             } else if (dueFlashcards.isEmpty()) {
                 Text(text = "No cards due.")
             } else {
-                val flashcard = dueFlashcards.first()
+                val totalCount = if (initialTotal > 0) initialTotal else dueFlashcards.size + sessionCorrect + sessionIncorrect
+                val currentCount = minOf(sessionCorrect + sessionIncorrect + 1, totalCount)
 
-                LaunchedEffect(flashcard) {
-                    showBack = false
-                    hasFlipped = false
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = onReviewComplete) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Exit Session",
+                            tint = Color.Gray
+                        )
+                    }
+
+                    Text(
+                        text = "$currentCount / $totalCount",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray
+                    )
                 }
 
+                val flashcard = dueFlashcards.first()
                 if (deck != null) {
                     val currentLang = if (showBack) deck.backLanguage else deck.frontLanguage
                     if (currentLang != "other") {
