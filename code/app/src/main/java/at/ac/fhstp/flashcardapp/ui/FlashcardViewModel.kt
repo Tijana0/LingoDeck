@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -75,15 +76,19 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
 
     fun startReviewSession(deckId: Int) {
         viewModelScope.launch {
+            val reviewedToday = repository.getReviewedCountToday(deckId).first()
+            val remainingToday = (20 - reviewedToday).coerceAtLeast(0)
             val cards = repository.getDueFlashcardsList(deckId)
-            _reviewCards.value = cards.shuffled().take(20)
+            _reviewCards.value = cards.shuffled().take(remainingToday)
         }
     }
 
     fun startPracticeSession(deckId: Int) {
         viewModelScope.launch {
+            val reviewedToday = repository.getReviewedCountToday(deckId).first()
+            val remainingToday = (20 - reviewedToday).coerceAtLeast(0)
             val cards = repository.getFlashcardsForDeckList(deckId)
-            _reviewCards.value = cards.shuffled().take(20)
+            _reviewCards.value = cards.shuffled().take(remainingToday)
         }
     }
 
