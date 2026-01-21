@@ -1,32 +1,8 @@
-package at.ac.fhstp.flashcardapp.ui
-
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Book
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.FileOpen
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
-import at.ac.fhstp.flashcardapp.R
-import at.ac.fhstp.flashcardapp.data.Deck
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.lazy.rememberLazyListState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun DeckListScreen(
@@ -44,6 +20,10 @@ fun DeckListScreen(
     var selectedUri by remember { mutableStateOf<android.net.Uri?>(null) }
     var importName by remember { mutableStateOf("") }
 
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+    var highlightedDeckId by remember { mutableStateOf<Int?>(null) }
+
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri: android.net.Uri? ->
@@ -55,6 +35,7 @@ fun DeckListScreen(
     }
 
     if (showImportNameDialog) {
+        // ... (Dialog code remains same)
         AlertDialog(
             onDismissRequest = { showImportNameDialog = false },
             title = { Text("Import Anki Deck") },
@@ -112,6 +93,7 @@ fun DeckListScreen(
 
     Scaffold(
         bottomBar = {
+            // ... (Bottom bar remains same)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -129,7 +111,7 @@ fun DeckListScreen(
                     onClick = onAddDeckClick,
                     icon = { Icon(Icons.Default.Add, contentDescription = "Add") },
                     text = { Text("New Deck") },
-                    containerColor = Color(0xFF6D5CFF), // Theme purple
+                    containerColor = AccentPurple,
                     contentColor = Color.White,
                     modifier = Modifier.weight(1f)
                 )
@@ -183,6 +165,17 @@ fun DeckListScreen(
                         // DASHBOARD STAT CARD
                         if (totalDueCount > 0) {
                             Card(
+                                onClick = {
+                                    val targetIndex = decksUiState.indexOfFirst { it.dueCards > 0 }
+                                    if (targetIndex != -1) {
+                                        coroutineScope.launch {
+                                            listState.animateScrollToItem(targetIndex)
+                                            highlightedDeckId = decksUiState[targetIndex].deck.id
+                                            delay(1000)
+                                            highlightedDeckId = null
+                                        }
+                                    }
+                                },
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.1f)
                                 ),
@@ -256,10 +249,23 @@ fun DeckListScreen(
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 16.dp)
+                    contentPadding = PaddingValues(bottom = 16.dp),
+                    state = listState
                 ) {
                     items(decksUiState) { deckUi ->
                         val deck = deckUi.deck
+                        val isHighlighted = deck.id == highlightedDeckId
+                        val borderColor by animateColorAsState(
+                            targetValue = if (isHighlighted) AccentPurple else Color(0xFF5A4BFF).copy(alpha = 0.28f),
+                            animationSpec = tween(durationMillis = 500),
+                            label = "BorderColor"
+                        )
+                        val borderWidth by androidx.compose.animation.core.animateDpAsState(
+                            targetValue = if (isHighlighted) 3.dp else 1.6.dp,
+                            animationSpec = tween(durationMillis = 500),
+                            label = "BorderWidth"
+                        )
+
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -268,8 +274,8 @@ fun DeckListScreen(
                             shape = RoundedCornerShape(22.dp),
                             colors = CardDefaults.cardColors(containerColor = Color.Transparent),
                             border = BorderStroke(
-                                1.6.dp,
-                                Color(0xFF5A4BFF).copy(alpha = 0.28f)
+                                borderWidth,
+                                borderColor
                             )
                         ) {
                             Box(
@@ -284,6 +290,7 @@ fun DeckListScreen(
                                     )
                                     .padding(16.dp)
                             ) {
+                                // ... (Card content remains the same)
                                 Column {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
@@ -302,7 +309,7 @@ fun DeckListScreen(
                                                         Brush.linearGradient(
                                                             listOf(
                                                                 AccentPurple,
-                                                                Color(0xFF8B5CF6) // Keep secondary gradient color or standardize?
+                                                                Color(0xFF8B5CF6)
                                                             )
                                                         ),
                                                         RoundedCornerShape(14.dp)
