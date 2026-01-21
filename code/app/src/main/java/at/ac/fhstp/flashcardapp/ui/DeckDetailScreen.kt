@@ -126,9 +126,11 @@ fun DeckDetailScreen(
             }
 
             // 4. Review History Chart
+            /*
             item {
                 ReviewHistoryCard(data = chartData)
             }
+            */
 
             // 5. Flashcards List Header
             item {
