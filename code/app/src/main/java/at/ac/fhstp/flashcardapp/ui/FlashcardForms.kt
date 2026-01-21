@@ -125,7 +125,7 @@ fun DeckForm(
         ) {
             OutlinedButton(
                 onClick = onCancel,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
             ) {
@@ -134,7 +134,7 @@ fun DeckForm(
 
             Button(
                 onClick = { if (deckName.isNotBlank()) onSave(deckName, frontLang, backLang) },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = AccentPurple)
             ) {
@@ -214,7 +214,7 @@ fun FlashcardForm(
         ) {
             OutlinedButton(
                 onClick = onCancel,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
             ) {
@@ -223,7 +223,7 @@ fun FlashcardForm(
 
             Button(
                 onClick = { if (front.isNotBlank()) onSave(front, back) },
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).height(56.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = AccentPurple)
             ) {
