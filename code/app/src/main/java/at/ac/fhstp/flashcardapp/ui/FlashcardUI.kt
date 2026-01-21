@@ -64,8 +64,10 @@ fun FlashcardApp(
                 arguments = listOf(navArgument("deckId") { type = NavType.IntType })
             ) { backStackEntry ->
                 val deckId = backStackEntry.arguments?.getInt("deckId") ?: 0
+                val decksUiState by viewModel.decksUiState.collectAsState()
+                val deckUi = decksUiState.find { it.deck.id == deckId }
+                
                 val flashcards by viewModel.getFlashcardsForDeck(deckId).collectAsState(initial = emptyList())
-                val dueFlashcards by viewModel.getDueFlashcards(deckId).collectAsState(initial = emptyList())
                 val chartData = viewModel.getUpcomingReviewsChartData(flashcards)
                 val averageAccuracy by viewModel.getDeckAccuracy(deckId).collectAsState(initial = null)
                 
@@ -75,7 +77,7 @@ fun FlashcardApp(
                 DeckDetailScreen(
                     deckName = deck?.name ?: "Loading...",
                     flashcards = flashcards,
-                    dueFlashcardsCount = dueFlashcards.size,
+                    dueFlashcardsCount = deckUi?.dueCards ?: 0,
                     chartData = chartData,
                     averageAccuracy = averageAccuracy,
                     onStartReviewClick = {
