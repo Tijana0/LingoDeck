@@ -157,7 +157,7 @@ fun ReviewScreen(
                         .align(Alignment.TopCenter)
                         .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.Bottom
                 ) {
                     IconButton(onClick = onReviewComplete) {
                         Icon(
