@@ -247,9 +247,9 @@ fun ReviewScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(250.dp)
-                            .padding(horizontal = 16.dp)
+                            .padding(16.dp)
                             .offset { IntOffset(offset.value.roundToInt(), 0) }
-                            .pointerInput(hasFlipped) {
+                            .pointerInput(hasFlipped, flashcard) {
                                 detectHorizontalDragGestures(
                                     onDragEnd = {
                                         scope.launch {
