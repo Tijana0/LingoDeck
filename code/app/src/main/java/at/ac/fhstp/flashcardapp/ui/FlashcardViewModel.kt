@@ -26,6 +26,12 @@ data class DeckUiModel(
 @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class FlashcardViewModel(private val repository: FlashcardRepository) : ViewModel() {
 
+    init {
+        viewModelScope.launch {
+            repository.initialize()
+        }
+    }
+
     val decksUiState: StateFlow<List<DeckUiModel>> = combine(
         repository.allDecks,
         repository.getDeckStats()
