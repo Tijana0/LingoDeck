@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.graphics.BitmapFactory
 import androidx.core.app.NotificationCompat
 import at.ac.fhstp.flashcardapp.MainActivity
 import at.ac.fhstp.flashcardapp.R
@@ -34,8 +35,11 @@ object NotificationHelper {
             notificationManager.createNotificationChannel(channel)
         }
 
+        val largeIcon = BitmapFactory.decodeResource(context.resources, R.drawable.logo)
+
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setLargeIcon(largeIcon)
             .setContentTitle("Study Time! \uD83D\uDCDA")
             .setContentText("You have $count cards ready for review.")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
