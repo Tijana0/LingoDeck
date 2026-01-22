@@ -184,7 +184,7 @@ class FlashcardRepository(
 
     suspend fun initialize() {
         if (deckDao.getAllDecks().first().isEmpty()) {
-            val deckId = addDeck("Welcome! \uD83D\uDE80", "en", "en").toInt()
+            val deckId = addDeck("Welcome! \uD83D\uDE80", "other", "other").toInt()
             val time = System.currentTimeMillis()
             val cards = listOf(
                 "Swipe Right \uD83D\uDC49" to "To mark as Correct! \u2705",
