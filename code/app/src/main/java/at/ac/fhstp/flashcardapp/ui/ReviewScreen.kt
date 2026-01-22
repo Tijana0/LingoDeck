@@ -312,31 +312,21 @@ fun ReviewScreen(
                                 .drawBehind {
                                     val strokeWidth = 8.dp.toPx()
                                     
-                                    // Left Red Border (Wrong)
-                                    val leftBrush = Brush.verticalGradient(
-                                        colors = listOf(Color.Transparent, Color.Red.copy(alpha = 0.6f), Color.Transparent),
-                                        startY = 0f,
-                                        endY = size.height
-                                    )
-                                    drawLine(
-                                        brush = leftBrush,
-                                        start = Offset(0f, 0f),
-                                        end = Offset(0f, size.height),
-                                        strokeWidth = strokeWidth
-                                    )
+                                    // Left Red Border (Tapered)
+                                    val leftPath = Path().apply {
+                                        moveTo(0f, 0f)
+                                        quadraticBezierTo(strokeWidth, size.height / 2, 0f, size.height)
+                                        close()
+                                    }
+                                    drawPath(leftPath, Color.Red.copy(alpha = 0.6f))
                                     
-                                    // Right Green Border (Correct)
-                                    val rightBrush = Brush.verticalGradient(
-                                        colors = listOf(Color.Transparent, Color.Green.copy(alpha = 0.6f), Color.Transparent),
-                                        startY = 0f,
-                                        endY = size.height
-                                    )
-                                    drawLine(
-                                        brush = rightBrush,
-                                        start = Offset(size.width, 0f),
-                                        end = Offset(size.width, size.height),
-                                        strokeWidth = strokeWidth
-                                    )
+                                    // Right Green Border (Tapered)
+                                    val rightPath = Path().apply {
+                                        moveTo(size.width, 0f)
+                                        quadraticBezierTo(size.width - strokeWidth, size.height / 2, size.width, size.height)
+                                        close()
+                                    }
+                                    drawPath(rightPath, Color.Green.copy(alpha = 0.6f))
                                 }
                         ) {
                             Column(
