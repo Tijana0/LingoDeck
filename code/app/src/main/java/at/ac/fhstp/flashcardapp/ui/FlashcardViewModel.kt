@@ -6,6 +6,7 @@ import at.ac.fhstp.flashcardapp.data.Deck
 import at.ac.fhstp.flashcardapp.data.Flashcard
 import at.ac.fhstp.flashcardapp.data.FlashcardRepository
 import at.ac.fhstp.flashcardapp.logic.AnkiImporter
+import at.ac.fhstp.flashcardapp.logic.NotificationHelper
 import at.ac.fhstp.flashcardapp.logic.SpacedRepetition
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -207,5 +208,9 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
 
     fun getDeckAccuracy(deckId: Int): Flow<Float?> {
         return repository.getAverageAccuracy(deckId)
+    }
+
+    fun testNotification(context: android.content.Context) {
+        NotificationHelper.sendNotification(context, totalDueFlashcardsCount.value)
     }
 }
