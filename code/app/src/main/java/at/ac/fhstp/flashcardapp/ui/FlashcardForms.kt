@@ -57,6 +57,7 @@ fun DeckForm(
     var deckName by remember { mutableStateOf(initialName) }
     var frontLang by remember { mutableStateOf(initialFront) }
     var backLang by remember { mutableStateOf(initialBack) }
+    var showCancelDialog by remember { mutableStateOf(false) }
 
     val languages = listOf(
         "en" to "English",
@@ -84,16 +85,36 @@ fun DeckForm(
         "vi" to "Vietnamese"
     ).sortedBy { it.second } + ("other" to "Other (No Audio)")
 
+    if (showCancelDialog) {
+        AlertDialog(
+            onDismissRequest = { showCancelDialog = false },
+            title = { Text("Discard changes?") },
+            text = { Text("You have unsaved changes. Are you sure you want to go back?") },
+            confirmButton = {
+                TextButton(onClick = onCancel) { Text("Discard", color = Color.Red) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showCancelDialog = false }) { Text("Keep Editing") }
+            }
+        )
+    }
+
     Scaffold(
         bottomBar = {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp), // Standard padding
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 20.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 OutlinedButton(
-                    onClick = onCancel,
+                    onClick = {
+                        if (deckName != initialName || frontLang != initialFront || backLang != initialBack) {
+                            showCancelDialog = true
+                        } else {
+                            onCancel()
+                        }
+                    },
                     modifier = Modifier.weight(1f).height(56.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
@@ -189,6 +210,21 @@ fun FlashcardForm(
 ) {
     var front by remember { mutableStateOf(initialFront) }
     var back by remember { mutableStateOf(initialBack) }
+    var showCancelDialog by remember { mutableStateOf(false) }
+
+    if (showCancelDialog) {
+        AlertDialog(
+            onDismissRequest = { showCancelDialog = false },
+            title = { Text("Discard changes?") },
+            text = { Text("You have unsaved changes. Are you sure you want to go back?") },
+            confirmButton = {
+                TextButton(onClick = onCancel) { Text("Discard", color = Color.Red) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showCancelDialog = false }) { Text("Keep Editing") }
+            }
+        )
+    }
 
     Scaffold(
         bottomBar = {
@@ -199,7 +235,13 @@ fun FlashcardForm(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 OutlinedButton(
-                    onClick = onCancel,
+                    onClick = {
+                        if (front != initialFront || back != initialBack) {
+                            showCancelDialog = true
+                        } else {
+                            onCancel()
+                        }
+                    },
                     modifier = Modifier.weight(1f).height(56.dp),
                     shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
