@@ -54,6 +54,9 @@ fun FlashcardApp(
                         navController.navigate("${Routes.EditDeck.name}/${deck.id}")
                     },
                     onDeleteDeckClick = { deck -> viewModel.deleteDeck(deck) },
+                    onStartReviewClick = { deck ->
+                        navController.navigate("${Routes.Review.name}/${deck.id}?practice=false")
+                    },
                     onImportAnkiClick = { uri, name ->
                         viewModel.importAnkiDeck(context, uri, name)
                     }
