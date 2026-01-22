@@ -367,7 +367,7 @@ fun DeckListScreen(
                                                     Icon(
                                                         imageVector = Icons.Default.PlayArrow,
                                                         contentDescription = "Start Review",
-                                                        tint = AccentGreen
+                                                        tint = Color.White
                                                     )
                                                 }
                                             }
