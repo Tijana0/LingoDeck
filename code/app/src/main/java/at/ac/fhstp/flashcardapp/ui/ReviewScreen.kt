@@ -328,13 +328,14 @@ fun ReviewScreen(
                                             colors = IconButtonDefaults.filledIconButtonColors(
                                                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                                                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                    ) {
-                                        Icon(
-                                            Icons.AutoMirrored.Filled.VolumeUp,
-                                            contentDescription = "Speak",
-                                            modifier = Modifier.size(32.dp)
-                                        )
-                                    }
+                                            )
+                                        ) {
+                                            Icon(
+                                                Icons.AutoMirrored.Filled.VolumeUp,
+                                                contentDescription = "Speak",
+                                                modifier = Modifier.size(32.dp)
+                                            )
+                                        }
                                 }
                             }
                         }
