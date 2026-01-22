@@ -310,17 +310,29 @@ fun ReviewScreen(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .drawBehind {
-                                    val strokeWidth = 12.dp.toPx() // Increased width for visibility
+                                    val strokeWidth = 8.dp.toPx()
+                                    
                                     // Left Red Border (Wrong)
+                                    val leftBrush = Brush.verticalGradient(
+                                        colors = listOf(Color.Transparent, Color.Red.copy(alpha = 0.6f), Color.Transparent),
+                                        startY = 0f,
+                                        endY = size.height
+                                    )
                                     drawLine(
-                                        color = Color.Red.copy(alpha = 0.5f),
+                                        brush = leftBrush,
                                         start = Offset(0f, 0f),
                                         end = Offset(0f, size.height),
                                         strokeWidth = strokeWidth
                                     )
+                                    
                                     // Right Green Border (Correct)
+                                    val rightBrush = Brush.verticalGradient(
+                                        colors = listOf(Color.Transparent, Color.Green.copy(alpha = 0.6f), Color.Transparent),
+                                        startY = 0f,
+                                        endY = size.height
+                                    )
                                     drawLine(
-                                        color = Color.Green.copy(alpha = 0.5f),
+                                        brush = rightBrush,
                                         start = Offset(size.width, 0f),
                                         end = Offset(size.width, size.height),
                                         strokeWidth = strokeWidth
