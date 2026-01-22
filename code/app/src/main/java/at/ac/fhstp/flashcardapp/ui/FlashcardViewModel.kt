@@ -92,10 +92,8 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
 
     fun startPracticeSession(deckId: Int) {
         viewModelScope.launch {
-            val reviewedToday = repository.getReviewedCountToday(deckId).first()
-            val remainingToday = (20 - reviewedToday).coerceAtLeast(0)
             val cards = repository.getFlashcardsForDeckList(deckId)
-            _reviewCards.value = cards.shuffled().take(remainingToday)
+            _reviewCards.value = cards.shuffled().take(20)
         }
     }
 
