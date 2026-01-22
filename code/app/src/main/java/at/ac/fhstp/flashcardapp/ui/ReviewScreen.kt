@@ -328,19 +328,19 @@ fun ReviewScreen(
                                             colors = IconButtonDefaults.filledIconButtonColors(
                                                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                                                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                        ) {
-                                            Icon(
-                                                Icons.AutoMirrored.Filled.VolumeUp,
-                                                contentDescription = "Speak",
-                                                modifier = Modifier.size(32.dp)
-                                            )
-                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                        Spacer(modifier = Modifier.height(16.dp))                    Text(
+                                    ) {
+                                        Icon(
+                                            Icons.AutoMirrored.Filled.VolumeUp,
+                                            contentDescription = "Speak",
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
                         text = if (!showBack) "Tap to show answer" else "Swipe right for correct, left for incorrect,\nTap to flip back",
                         style = MaterialTheme.typography.bodySmall,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
