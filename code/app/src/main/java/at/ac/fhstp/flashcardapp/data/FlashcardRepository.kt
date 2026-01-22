@@ -184,7 +184,7 @@ class FlashcardRepository(
 
     suspend fun initialize() {
         if (deckDao.getAllDecks().first().isEmpty()) {
-            val deckId = addDeck("Toki Pona \uD83D\uDE42", "other", "en").toInt()
+            val deckId = addDeck("Toki Pona", "other", "en").toInt()
             val time = System.currentTimeMillis()
             val cards = listOf(
                 "toki" to "hello, language, speech",

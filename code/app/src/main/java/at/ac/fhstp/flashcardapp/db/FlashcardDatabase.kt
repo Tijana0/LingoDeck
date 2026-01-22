@@ -27,7 +27,7 @@ abstract class FlashcardDatabase : RoomDatabase() {
                             val time = System.currentTimeMillis()
                             
                             // Insert Tutorial Deck
-                            db.execSQL("INSERT INTO decks (name, frontLanguage, backLanguage) VALUES ('Toki Pona \uD83D\uDE42', 'other', 'en')")
+                            db.execSQL("INSERT INTO decks (name, frontLanguage, backLanguage) VALUES ('Toki Pona', 'other', 'en')")
                             
                             // Insert Tutorial Cards
                             val cards = listOf(
