@@ -336,16 +336,18 @@ fun DeckListScreen(
                                                     .size(48.dp)
                                                     .background(
                                                         Brush.linearGradient(
-                                                            if (deckUi.dueCards > 0) listOf(AccentGreen, Color(0xFF00C853)) else listOf(AccentPurple, Color(0xFF8B5CF6))
+                                                            listOf(
+                                                                AccentPurple,
+                                                                Color(0xFF8B5CF6)
+                                                            )
                                                         ),
                                                         RoundedCornerShape(14.dp)
-                                                    )
-                                                    .clickable(enabled = deckUi.dueCards > 0) { onStartReviewClick(deck) },
+                                                    ),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Icon(
-                                                    imageVector = if (deckUi.dueCards > 0) Icons.Default.PlayArrow else Icons.Default.Book,
-                                                    contentDescription = if (deckUi.dueCards > 0) "Start Review" else null,
+                                                    imageVector = Icons.Default.Book,
+                                                    contentDescription = null,
                                                     tint = Color.White
                                                 )
                                             }
@@ -360,6 +362,24 @@ fun DeckListScreen(
                                         }
 
                                         Row(verticalAlignment = Alignment.CenterVertically) {
+                                            if (deckUi.dueCards > 0) {
+                                                FilledIconButton(
+                                                    onClick = { onStartReviewClick(deck) },
+                                                    modifier = Modifier.size(36.dp),
+                                                    colors = IconButtonDefaults.filledIconButtonColors(
+                                                        containerColor = AccentPurple,
+                                                        contentColor = Color.White
+                                                    )
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.PlayArrow,
+                                                        contentDescription = "Start Review",
+                                                        modifier = Modifier.size(20.dp)
+                                                    )
+                                                }
+                                                Spacer(modifier = Modifier.width(8.dp))
+                                            }
+
                                             // MENU BUTTON
                                             Box {
                                                 var expanded by remember { mutableStateOf(false) }
