@@ -84,61 +84,68 @@ fun DeckForm(
         "vi" to "Vietnamese"
     ).sortedBy { it.second } + ("other" to "Other (No Audio)")
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .padding(top = 32.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = title, style = MaterialTheme.typography.headlineMedium)
-        OutlinedTextField(
-            value = deckName,
-            onValueChange = { deckName = it },
-            label = { Text("Deck Name") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp)
-        )
-        
-        Text(text = "Languages", style = MaterialTheme.typography.titleMedium)
-        
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            LanguageDropdown(
-                label = "Front",
-                selectedCode = frontLang,
-                onLanguageSelected = { frontLang = it },
-                languages = languages,
-                modifier = Modifier.weight(1f)
-            )
-            LanguageDropdown(
-                label = "Back",
-                selectedCode = backLang,
-                onLanguageSelected = { backLang = it },
-                languages = languages,
-                modifier = Modifier.weight(1f)
-            )
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            OutlinedButton(
-                onClick = onCancel,
-                modifier = Modifier.weight(1f).height(56.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+    Scaffold(
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp), // Standard padding
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("Cancel")
+                OutlinedButton(
+                    onClick = onCancel,
+                    modifier = Modifier.weight(1f).height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+                ) {
+                    Text("Cancel")
+                }
+
+                Button(
+                    onClick = { if (deckName.isNotBlank()) onSave(deckName, frontLang, backLang) },
+                    modifier = Modifier.weight(1f).height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = AccentPurple)
+                ) {
+                    Text(buttonText)
+                }
             }
-
-            Button(
-                onClick = { if (deckName.isNotBlank()) onSave(deckName, frontLang, backLang) },
-                modifier = Modifier.weight(1f).height(56.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = AccentPurple)
-            ) {
-                Text(buttonText)
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+                .padding(top = 16.dp), // Adjust top padding
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(text = title, style = MaterialTheme.typography.headlineMedium)
+            OutlinedTextField(
+                value = deckName,
+                onValueChange = { deckName = it },
+                label = { Text("Deck Name") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            )
+            
+            Text(text = "Languages", style = MaterialTheme.typography.titleMedium)
+            
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                LanguageDropdown(
+                    label = "Front",
+                    selectedCode = frontLang,
+                    onLanguageSelected = { frontLang = it },
+                    languages = languages,
+                    modifier = Modifier.weight(1f)
+                )
+                LanguageDropdown(
+                    label = "Back",
+                    selectedCode = backLang,
+                    onLanguageSelected = { backLang = it },
+                    languages = languages,
+                    modifier = Modifier.weight(1f)
+                )
             }
         }
     }
@@ -183,52 +190,59 @@ fun FlashcardForm(
     var front by remember { mutableStateOf(initialFront) }
     var back by remember { mutableStateOf(initialBack) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .padding(top = 32.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(text = if (initialFront.isEmpty()) "Add Flashcard" else "Edit Flashcard", style = MaterialTheme.typography.headlineMedium)
+    Scaffold(
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                OutlinedButton(
+                    onClick = onCancel,
+                    modifier = Modifier.weight(1f).height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+                ) {
+                    Text("Cancel")
+                }
 
-        OutlinedTextField(
-            value = front,
-            onValueChange = { front = it },
-            label = { Text("Front") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp)
-        )
-
-        OutlinedTextField(
-            value = back,
-            onValueChange = { back = it },
-            label = { Text("Back") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp)
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                Button(
+                    onClick = { if (front.isNotBlank()) onSave(front, back) },
+                    modifier = Modifier.weight(1f).height(56.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = AccentPurple)
+                ) {
+                    Text(buttonText)
+                }
+            }
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+                .padding(top = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            OutlinedButton(
-                onClick = onCancel,
-                modifier = Modifier.weight(1f).height(56.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
-            ) {
-                Text("Cancel")
-            }
+            Text(text = if (initialFront.isEmpty()) "Add Flashcard" else "Edit Flashcard", style = MaterialTheme.typography.headlineMedium)
 
-            Button(
-                onClick = { if (front.isNotBlank()) onSave(front, back) },
-                modifier = Modifier.weight(1f).height(56.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = AccentPurple)
-            ) {
-                Text(buttonText)
-            }
+            OutlinedTextField(
+                value = front,
+                onValueChange = { front = it },
+                label = { Text("Front") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            )
+
+            OutlinedTextField(
+                value = back,
+                onValueChange = { back = it },
+                label = { Text("Back") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp)
+            )
         }
     }
 }

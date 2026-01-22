@@ -85,6 +85,20 @@ fun DeckDetailScreen(
 
     Scaffold(
         containerColor = BgDark,
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                ActionButtonsRow(
+                    onStartReviewClick = onStartReviewClick,
+                    onStartPracticeClick = onStartPracticeClick,
+                    dueCount = dueFlashcardsCount,
+                    totalCount = flashcards.size
+                )
+            }
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddFlashcardClick,
@@ -95,7 +109,7 @@ fun DeckDetailScreen(
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
         },
-        floatingActionButtonPosition = FabPosition.EndOverlay
+        floatingActionButtonPosition = FabPosition.End
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
@@ -115,24 +129,14 @@ fun DeckDetailScreen(
                 StatsRow(dueFlashcardsCount, flashcards.size, accuracyText)
             }
 
-            // 3. Action Buttons
-            item {
-                ActionButtonsRow(
-                    onStartReviewClick = onStartReviewClick,
-                    onStartPracticeClick = onStartPracticeClick,
-                    dueCount = dueFlashcardsCount,
-                    totalCount = flashcards.size
-                )
-            }
-
-            // 4. Review History Chart
+            // 3. Review History Chart
             /*
             item {
                 ReviewHistoryCard(data = chartData)
             }
             */
 
-            // 5. Flashcards List Header
+            // 4. Flashcards List Header
             item {
                 Text(
                     text = "Flashcards (${flashcards.size})",
