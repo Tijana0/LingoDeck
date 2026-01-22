@@ -51,22 +51,24 @@
         }
 
         .btn-download {
-            background-color: #3498db;
+            background-color: #8e44ad;
             color: white;
             padding: 14px 28px;
             font-size: 1.1rem;
             font-weight: 600;
             text-decoration: none;
-            border-radius: 50px; /* Pill shape */
+            border-radius: 50px;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
+            box-shadow: 0 4px 6px rgba(142, 68, 173, 0.3);
             display: inline-block;
+            border: none;
+            cursor: pointer;
         }
 
         .btn-download:hover {
-            background-color: #2980b9;
+            background-color: #732d91;
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 6px 12px rgba(142, 68, 173, 0.4);
         }
 
         .install-note {
@@ -100,6 +102,10 @@
     <a href="../code/app/build/outputs/apk/debug/LingoDeck.apk" download="MyApp-v1.0.apk" class="btn-download">
         <button>Download LingoDeck</button>
     </a>
+
+    <p class="install-note">
+        <em>Note: You may need to enable "Install from Unknown Sources" in your Android settings to install this app.</em>
+    </p>
 
     <hr>
 
