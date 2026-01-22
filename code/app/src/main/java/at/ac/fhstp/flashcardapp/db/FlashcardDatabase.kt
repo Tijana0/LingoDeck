@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [FlashcardEntity::class, DeckEntity::class, StudySessionEntity::class], version = 9)
+@Database(entities = [FlashcardEntity::class, DeckEntity::class, StudySessionEntity::class], version = 10)
 abstract class FlashcardDatabase : RoomDatabase() {
     abstract fun flashcardDao(): FlashcardDao
     abstract fun deckDao(): DeckDao
@@ -27,14 +27,20 @@ abstract class FlashcardDatabase : RoomDatabase() {
                             val time = System.currentTimeMillis()
                             
                             // Insert Tutorial Deck
-                            db.execSQL("INSERT INTO decks (name, frontLanguage, backLanguage) VALUES ('Welcome! \uD83D\uDE80', 'en', 'en')")
+                            db.execSQL("INSERT INTO decks (name, frontLanguage, backLanguage) VALUES ('Toki Pona \uD83D\uDE42', 'other', 'en')")
                             
                             // Insert Tutorial Cards
                             val cards = listOf(
-                                "Swipe Right \uD83D\uDC49" to "To mark as Correct! \u2705",
-                                "Swipe Left \uD83D\uDC48" to "To mark as Wrong \u274C",
-                                "Tap the card \uD83D\uDC46" to "To flip it! \uD83D\uDD04",
-                                "Enjoy!" to "Have fun learning! \uD83C\uDF89"
+                                "toki" to "hello, language, speech",
+                                "pona" to "good, simple, friendly",
+                                "moku" to "eat, drink, food",
+                                "soweli" to "animal, beast",
+                                "telo" to "water, fluid",
+                                "kili" to "fruit, vegetable",
+                                "lili" to "small, little",
+                                "suli" to "big, tall, important",
+                                "mi" to "I, me, my",
+                                "sina" to "you, your"
                             )
                             
                             cards.forEach { (front, back) ->
