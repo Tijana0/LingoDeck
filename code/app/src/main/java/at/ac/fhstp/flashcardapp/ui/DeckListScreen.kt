@@ -44,7 +44,6 @@ fun DeckListScreen(
     onEditDeckClick: (Deck) -> Unit,
     onDeleteDeckClick: (Deck) -> Unit,
     onStartReviewClick: (Deck) -> Unit,
-    onTestNotification: () -> Unit,
     onImportAnkiClick: (android.net.Uri, String) -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -190,17 +189,6 @@ fun DeckListScreen(
                                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                                     fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
                                 )
-                                TextButton(
-                                    onClick = onTestNotification,
-                                    contentPadding = PaddingValues(0.dp),
-                                    modifier = Modifier.height(24.dp)
-                                ) {
-                                    Text(
-                                        text = "Test Notifications",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = Color.White.copy(alpha = 0.7f)
-                                    )
-                                }
                                 Text(
                                     text = "Ready to learn?",
                                     style = MaterialTheme.typography.bodySmall,

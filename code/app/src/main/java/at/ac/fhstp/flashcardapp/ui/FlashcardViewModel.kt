@@ -209,8 +209,4 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
     fun getDeckAccuracy(deckId: Int): Flow<Float?> {
         return repository.getAverageAccuracy(deckId)
     }
-
-    fun testNotification(context: android.content.Context) {
-        NotificationHelper.sendNotification(context, totalDueFlashcardsCount.value)
-    }
 }
