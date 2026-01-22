@@ -248,23 +248,6 @@ fun ReviewScreen(
                             .fillMaxWidth()
                             .height(250.dp)
                             .padding(16.dp)
-                            .drawBehind {
-                                val strokeWidth = 4.dp.toPx()
-                                // Left Red Border (Wrong)
-                                drawLine(
-                                    color = Color.Red.copy(alpha = 0.5f),
-                                    start = Offset(0f, 0f),
-                                    end = Offset(0f, size.height),
-                                    strokeWidth = strokeWidth
-                                )
-                                // Right Green Border (Correct)
-                                drawLine(
-                                    color = Color.Green.copy(alpha = 0.5f),
-                                    start = Offset(size.width, 0f),
-                                    end = Offset(size.width, size.height),
-                                    strokeWidth = strokeWidth
-                                )
-                            }
                             .offset { IntOffset(offset.value.roundToInt(), 0) }
                             .pointerInput(hasFlipped, flashcard) {
                                 detectHorizontalDragGestures(
@@ -278,7 +261,7 @@ fun ReviewScreen(
                                                         duration = SnackbarDuration.Short
                                                     )
                                                 }
-                                                delay(1500)
+                                                delay(1500) // ~3x shorter than default Short (4s)
                                                 snackJob.cancel()
                                                 offset.animateTo(0f)
                                                 return@launch
@@ -321,41 +304,59 @@ fun ReviewScreen(
                                 showBack = !showBack
                                 if (showBack) hasFlipped = true
                             },
-                        shape = RoundedCornerShape(28.dp),
-                        border = BorderStroke(borderWidth, borderColor),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
+                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                     ) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .drawBehind {
+                                    val strokeWidth = 12.dp.toPx() // Increased width for visibility
+                                    // Left Red Border (Wrong)
+                                    drawLine(
+                                        color = Color.Red.copy(alpha = 0.5f),
+                                        start = Offset(0f, 0f),
+                                        end = Offset(0f, size.height),
+                                        strokeWidth = strokeWidth
+                                    )
+                                    // Right Green Border (Correct)
+                                    drawLine(
+                                        color = Color.Green.copy(alpha = 0.5f),
+                                        start = Offset(size.width, 0f),
+                                        end = Offset(size.width, size.height),
+                                        strokeWidth = strokeWidth
+                                    )
+                                }
                         ) {
-                            Text(
-                                text = if (showBack) flashcard.back else flashcard.front,
-                                style = MaterialTheme.typography.headlineMedium
-                            )
-                            Spacer(modifier = Modifier.height(24.dp))
-                            if (deck != null) {
-                                val currentLang = if (showBack) deck.backLanguage else deck.frontLanguage
-                                if (currentLang != "other") {
-                                    FilledIconButton(
-                                        onClick = {
-                                            val textToSpeak = if (showBack) flashcard.back else flashcard.front
-                                            speak(textToSpeak, currentLang)
-                                        },
-                                        modifier = Modifier.size(56.dp),
-                                        colors = IconButtonDefaults.filledIconButtonColors(
-                                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                        )
-                                    ) {
-                                        Icon(
-                                            Icons.AutoMirrored.Filled.VolumeUp,
-                                            contentDescription = "Speak",
-                                            modifier = Modifier.size(32.dp)
-                                        )
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = if (showBack) flashcard.back else flashcard.front,
+                                    style = MaterialTheme.typography.headlineMedium
+                                )
+                                Spacer(modifier = Modifier.height(24.dp))
+                                if (deck != null) {
+                                    val currentLang = if (showBack) deck.backLanguage else deck.frontLanguage
+                                    if (currentLang != "other") {
+                                        FilledIconButton(
+                                            onClick = {
+                                                val textToSpeak = if (showBack) flashcard.back else flashcard.front
+                                                speak(textToSpeak, currentLang)
+                                            },
+                                            modifier = Modifier.size(56.dp),
+                                            colors = IconButtonDefaults.filledIconButtonColors(
+                                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                            )
+                                        ) {
+                                            Icon(
+                                                Icons.AutoMirrored.Filled.VolumeUp,
+                                                contentDescription = "Speak",
+                                                modifier = Modifier.size(32.dp)
+                                            )
+                                        }
                                     }
                                 }
                             }
