@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [FlashcardEntity::class, DeckEntity::class, StudySessionEntity::class], version = 7)
+@Database(entities = [FlashcardEntity::class, DeckEntity::class, StudySessionEntity::class], version = 8)
 abstract class FlashcardDatabase : RoomDatabase() {
     abstract fun flashcardDao(): FlashcardDao
     abstract fun deckDao(): DeckDao
