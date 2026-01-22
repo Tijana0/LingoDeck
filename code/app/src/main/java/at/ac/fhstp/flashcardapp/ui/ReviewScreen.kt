@@ -261,7 +261,7 @@ fun ReviewScreen(
                                                         duration = SnackbarDuration.Short
                                                     )
                                                 }
-                                                delay(1500) // ~3x shorter than default Short (4s)
+                                                delay(1500)
                                                 snackJob.cancel()
                                                 offset.animateTo(0f)
                                                 return@launch
@@ -304,38 +304,42 @@ fun ReviewScreen(
                                 showBack = !showBack
                                 if (showBack) hasFlipped = true
                             },
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                        shape = RoundedCornerShape(28.dp),
+                        border = BorderStroke(borderWidth, borderColor),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        )
                     ) {
                         Column(
                             modifier = Modifier.fillMaxSize(),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                                Text(
-                                    text = if (showBack) flashcard.back else flashcard.front,
-                                    style = MaterialTheme.typography.headlineMedium
-                                )
-                                Spacer(modifier = Modifier.height(24.dp))
-                                if (deck != null) {
-                                    val currentLang = if (showBack) deck.backLanguage else deck.frontLanguage
-                                    if (currentLang != "other") {
-                                        FilledIconButton(
-                                            onClick = {
-                                                val textToSpeak = if (showBack) flashcard.back else flashcard.front
-                                                speak(textToSpeak, currentLang)
-                                            },
-                                            modifier = Modifier.size(56.dp),
-                                            colors = IconButtonDefaults.filledIconButtonColors(
-                                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                                            )
-                                        ) {
-                                            Icon(
-                                                Icons.AutoMirrored.Filled.VolumeUp,
-                                                contentDescription = "Speak",
-                                                modifier = Modifier.size(32.dp)
-                                            )
-                                        }
+                            Text(
+                                text = if (showBack) flashcard.back else flashcard.front,
+                                style = MaterialTheme.typography.headlineMedium
+                            )
+                            Spacer(modifier = Modifier.height(24.dp))
+                            if (deck != null) {
+                                val currentLang = if (showBack) deck.backLanguage else deck.frontLanguage
+                                if (currentLang != "other") {
+                                    FilledIconButton(
+                                        onClick = {
+                                            val textToSpeak = if (showBack) flashcard.back else flashcard.front
+                                            speak(textToSpeak, currentLang)
+                                        },
+                                        modifier = Modifier.size(56.dp),
+                                        colors = IconButtonDefaults.filledIconButtonColors(
+                                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                        )
+                                    ) {
+                                        Icon(
+                                            Icons.AutoMirrored.Filled.VolumeUp,
+                                            contentDescription = "Speak",
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
