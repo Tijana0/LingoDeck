@@ -296,21 +296,20 @@ fun ReviewScreen(
                                     if (hasFlipped) {
                                         scope.launch {
                                             offset.snapTo(offset.value + dragAmount)
-                                        }
-                                    }
-                                }
-                            }
-                            .clickable {
-                                showBack = !showBack
-                                hasFlipped = true
-                            },
-                        shape = RoundedCornerShape(28.dp),
-                        border = BorderStroke(borderWidth, borderColor),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        )
-                    ) {
-                        Column(
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                onClick = {
+                                                                    showBack = !showBack
+                                                                    hasFlipped = true
+                                                                },
+                                                                shape = RoundedCornerShape(28.dp),
+                                                                border = BorderStroke(borderWidth, borderColor),
+                                                                colors = CardDefaults.cardColors(
+                                                                    containerColor = MaterialTheme.colorScheme.surface
+                                                                )
+                                                            ) {                        Column(
                             modifier = Modifier.fillMaxSize(),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
