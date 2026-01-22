@@ -265,6 +265,17 @@ fun ActionButtonsRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        OutlinedButton(
+            onClick = onStartPracticeClick,
+            enabled = totalCount > 0,
+            modifier = Modifier.weight(1f).height(56.dp),
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = AccentPurple),
+            border = BorderStroke(1.dp, AccentPurple),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Text("Practice")
+        }
+
         Button(
             onClick = onStartReviewClick,
             enabled = dueCount > 0,
@@ -276,17 +287,6 @@ fun ActionButtonsRow(
             shape = RoundedCornerShape(16.dp)
         ) {
             Text("Review ($dueCount)", color = TextWhite)
-        }
-        
-        OutlinedButton(
-            onClick = onStartPracticeClick,
-            enabled = totalCount > 0,
-            modifier = Modifier.weight(1f).height(56.dp),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = AccentPurple),
-            border = BorderStroke(1.dp, AccentPurple),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Text("Practice")
         }
     }
 }
