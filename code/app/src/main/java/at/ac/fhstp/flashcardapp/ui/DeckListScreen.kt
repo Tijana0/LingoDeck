@@ -53,6 +53,7 @@ fun DeckListScreen(
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     var highlightedDeckId by remember { mutableStateOf<Int?>(null) }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
@@ -121,6 +122,7 @@ fun DeckListScreen(
     }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
             Row(
                 modifier = Modifier
@@ -193,10 +195,11 @@ fun DeckListScreen(
                         // DASHBOARD STAT CARD
                         if (totalDueCount > 0) {
                             Card(
-                                onClick = {
+                                modifier = Modifier.clickable {
                                     val targetIndex = decksUiState.indexOfFirst { it.dueCards > 0 }
                                     if (targetIndex != -1) {
                                         coroutineScope.launch {
+                                            snackbarHostState.showSnackbar("Finding deck...")
                                             listState.animateScrollToItem(targetIndex)
                                             highlightedDeckId = decksUiState[targetIndex].deck.id
                                             delay(1000)
