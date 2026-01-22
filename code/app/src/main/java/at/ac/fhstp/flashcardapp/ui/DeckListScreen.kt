@@ -155,9 +155,14 @@ fun DeckListScreen(
         ) {
 
             // HEADER
-            Surface(
-                color = MaterialTheme.colorScheme.primaryContainer,
-                modifier = Modifier.fillMaxWidth()
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(BrandPurpleLight, BrandPurple)
+                        )
+                    )
             ) {
                 Column(
                     modifier = Modifier
