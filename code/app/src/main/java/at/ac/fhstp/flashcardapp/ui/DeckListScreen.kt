@@ -152,7 +152,7 @@ fun DeckListScreen(
                 .padding(paddingValues)
         ) {
 
-            // REDESIGNED HEADER
+            // HEADER
             Surface(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 modifier = Modifier.fillMaxWidth()

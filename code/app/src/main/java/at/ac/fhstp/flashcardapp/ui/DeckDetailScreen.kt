@@ -89,7 +89,7 @@ fun DeckDetailScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 20.dp)
             ) {
                 ActionButtonsRow(
                     onStartReviewClick = onStartReviewClick,
