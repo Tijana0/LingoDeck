@@ -312,20 +312,19 @@ fun ReviewScreen(
                                 .fillMaxSize()
                                 .drawBehind {
                                     val strokeWidth = 8.dp.toPx()
-                                    val extension = 40.dp.toPx() // Extend curve beyond bounds
                                     
                                     // Left Red Border (Tapered)
                                     val leftPath = Path().apply {
-                                        moveTo(0f, -extension)
-                                        quadraticBezierTo(strokeWidth, size.height / 2, 0f, size.height + extension)
+                                        moveTo(0f, 0f)
+                                        quadraticBezierTo(strokeWidth, size.height / 2, 0f, size.height)
                                         close()
                                     }
                                     drawPath(leftPath, Color.Red.copy(alpha = 0.6f))
                                     
                                     // Right Green Border (Tapered)
                                     val rightPath = Path().apply {
-                                        moveTo(size.width, -extension)
-                                        quadraticBezierTo(size.width - strokeWidth, size.height / 2, size.width, size.height + extension)
+                                        moveTo(size.width, 0f)
+                                        quadraticBezierTo(size.width - strokeWidth, size.height / 2, size.width, size.height)
                                         close()
                                     }
                                     drawPath(rightPath, Color.Green.copy(alpha = 0.6f))
