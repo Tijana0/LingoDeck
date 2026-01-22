@@ -306,34 +306,11 @@ fun ReviewScreen(
                             },
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .drawBehind {
-                                    val strokeWidth = 8.dp.toPx()
-                                    
-                                    // Left Red Border (Tapered)
-                                    val leftPath = Path().apply {
-                                        moveTo(0f, 0f)
-                                        quadraticBezierTo(strokeWidth, size.height / 2, 0f, size.height)
-                                        close()
-                                    }
-                                    drawPath(leftPath, Color.Red.copy(alpha = 0.6f))
-                                    
-                                    // Right Green Border (Tapered)
-                                    val rightPath = Path().apply {
-                                        moveTo(size.width, 0f)
-                                        quadraticBezierTo(size.width - strokeWidth, size.height / 2, size.width, size.height)
-                                        close()
-                                    }
-                                    drawPath(rightPath, Color.Green.copy(alpha = 0.6f))
-                                }
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
                                 Text(
                                     text = if (showBack) flashcard.back else flashcard.front,
                                     style = MaterialTheme.typography.headlineMedium
@@ -359,13 +336,11 @@ fun ReviewScreen(
                                                 modifier = Modifier.size(32.dp)
                                             )
                                         }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        Spacer(modifier = Modifier.height(16.dp))                    Text(
                         text = if (!showBack) "Tap to show answer" else "Swipe right for correct, left for incorrect,\nTap to flip back",
                         style = MaterialTheme.typography.bodySmall,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
