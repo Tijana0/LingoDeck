@@ -39,6 +39,45 @@
             margin: 1.5rem 0;
             overflow-x: auto;
         }
+
+        /*Download btn styles*/
+        .cta-container {
+            background-color: #eef2f5;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            margin: 2rem 0;
+            border: 1px solid #e1e4e8;
+        }
+
+        .btn-download {
+            background-color: #8e44ad;
+            color: white;
+            padding: 14px 28px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(142, 68, 173, 0.3);
+            display: inline-block;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-download:hover {
+            background-color: #732d91;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(142, 68, 173, 0.4);
+        }
+
+        .install-note {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 1rem;
+            margin-bottom: 0;
+        }
+
     </style>
 </head>
 <body>
@@ -58,6 +97,14 @@
         Built with <strong>Kotlin</strong> and <strong>Jetpack Compose</strong>, it uses a 
         <strong>Spaced Repetition System (SRS)</strong> algorithm to schedule flashcard reviews at the optimal moment, 
         just before a user is likely to forget a word. This way users can maximize their retention while not wasting study time.
+    </p>
+
+    <a href="../code/app/build/outputs/apk/debug/LingoDeck.apk" download="MyApp-v1.0.apk" class="btn-download">
+        <button>Download LingoDeck</button>
+    </a>
+
+    <p class="install-note">
+        <em>Note: You may need to enable "Install from Unknown Sources" in your Android settings to install this app.</em>
     </p>
 
     <hr>
