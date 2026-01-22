@@ -78,23 +78,16 @@ fun ReviewScreen(
     var hasProcessedCards by remember { mutableStateOf(false) }
     var initialTotal by remember { mutableIntStateOf(0) }
 
-    // Swipe progress (-1 = left, +1 = right)
-    val swipeProgress = (offset.value / threshold).coerceIn(-1f, 1f)
+    val borderColor by androidx.compose.animation.animateColorAsState(
+        targetValue = when {
+            offset.value > threshold -> Color.Green
+            offset.value < -threshold -> Color.Red
+            else -> Color(0xFF7C4DFF).copy(alpha = 0.6f)
+        },
+        label = "BorderColor"
+    )
 
-    // Border color reacts to swipe direction
-    val borderColor = when {
-        swipeProgress > 0f ->
-            Color(0xFF00C853).copy(alpha = swipeProgress) // green
-
-        swipeProgress < 0f ->
-            Color(0xFFFF5252).copy(alpha = -swipeProgress) // red
-
-        else ->
-            Color(0xFF7C4DFF).copy(alpha = 0.6f) // idle purple
-    }
-
-    // Border thickness increases while dragging
-    val borderWidth = (2.dp + (6.dp * kotlin.math.abs(swipeProgress)))
+    val borderWidth = if (kotlin.math.abs(offset.value) > 10f) 3.dp else 1.6.dp
 
     LaunchedEffect(dueFlashcards) {
         if (initialTotal == 0 && dueFlashcards != null && dueFlashcards.isNotEmpty()) {
@@ -195,6 +188,13 @@ fun ReviewScreen(
                 }
 
                 val flashcard = dueFlashcards.first()
+
+                LaunchedEffect(flashcard.id) {
+                    showBack = false
+                    hasFlipped = false
+                    offset.snapTo(0f)
+                }
+
                 if (deck != null) {
                     val currentLang = if (showBack) deck.backLanguage else deck.frontLanguage
                     if (currentLang != "other") {
@@ -249,7 +249,7 @@ fun ReviewScreen(
                             .height(250.dp)
                             .padding(16.dp)
                             .offset { IntOffset(offset.value.roundToInt(), 0) }
-                            .pointerInput(hasFlipped, flashcard) {
+                            .pointerInput(hasFlipped, flashcard.id) {
                                 detectHorizontalDragGestures(
                                     onDragEnd = {
                                         scope.launch {
@@ -302,7 +302,7 @@ fun ReviewScreen(
                             }
                             .clickable {
                                 showBack = !showBack
-                                if (showBack) hasFlipped = true
+                                hasFlipped = true
                             },
                         shape = RoundedCornerShape(28.dp),
                         border = BorderStroke(borderWidth, borderColor),
