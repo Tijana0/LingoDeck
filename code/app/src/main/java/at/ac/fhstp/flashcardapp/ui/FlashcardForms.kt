@@ -89,7 +89,7 @@ fun DeckForm(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp), // Standard padding
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 20.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 OutlinedButton(
