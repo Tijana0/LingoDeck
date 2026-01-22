@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [FlashcardEntity::class, DeckEntity::class, StudySessionEntity::class], version = 12)
+@Database(entities = [FlashcardEntity::class, DeckEntity::class, StudySessionEntity::class], version = 13)
 abstract class FlashcardDatabase : RoomDatabase() {
     abstract fun flashcardDao(): FlashcardDao
     abstract fun deckDao(): DeckDao
@@ -27,7 +27,7 @@ abstract class FlashcardDatabase : RoomDatabase() {
                             val time = System.currentTimeMillis()
                             
                             // Insert Tutorial Deck
-                            db.execSQL("INSERT INTO decks (name, frontLanguage, backLanguage) VALUES ('Toki Pona', 'other', 'en')")
+                            db.execSQL("INSERT INTO decks (name, frontLanguage, backLanguage) VALUES ('Toki Pona', 'other', 'other')")
                             
                             // Insert Tutorial Cards
                             val cards = listOf(
