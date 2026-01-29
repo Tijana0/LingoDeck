@@ -16,7 +16,7 @@ class AnkiImporter(
     private val repository: FlashcardRepository
 ) {
 
-    suspend fun importApkg(inputStream: InputStream, deckName: String) {
+    suspend fun importApkg(inputStream: InputStream, deckName: String, frontLanguage: String, backLanguage: String) {
         withContext(Dispatchers.IO) {
             val tempFile = File(context.cacheDir, "collection.anki2")
             var foundDb = false
@@ -39,7 +39,7 @@ class AnkiImporter(
                 throw Exception("Invalid .apkg file: collection.anki2 not found")
             }
 
-            val newDeckId = repository.addDeck(deckName, "en", "en").toInt()
+            val newDeckId = repository.addDeck(deckName, frontLanguage, backLanguage).toInt()
 
             val ankiDb = SQLiteDatabase.openDatabase(tempFile.path, null, SQLiteDatabase.OPEN_READONLY)
             try {

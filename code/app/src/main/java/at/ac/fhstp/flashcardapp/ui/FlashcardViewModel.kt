@@ -97,12 +97,12 @@ class FlashcardViewModel(private val repository: FlashcardRepository) : ViewMode
         }
     }
 
-    fun importAnkiDeck(context: android.content.Context, uri: android.net.Uri, deckName: String) {
+    fun importAnkiDeck(context: android.content.Context, uri: android.net.Uri, deckName: String, frontLanguage: String, backLanguage: String) {
         viewModelScope.launch {
             try {
                 val inputStream = context.contentResolver.openInputStream(uri)
                 if (inputStream != null) {
-                    AnkiImporter(context, repository).importApkg(inputStream, deckName)
+                    AnkiImporter(context, repository).importApkg(inputStream, deckName, frontLanguage, backLanguage)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -44,13 +44,41 @@ fun DeckListScreen(
     onEditDeckClick: (Deck) -> Unit,
     onDeleteDeckClick: (Deck) -> Unit,
     onStartReviewClick: (Deck) -> Unit,
-    onImportAnkiClick: (android.net.Uri, String) -> Unit
+    onImportAnkiClick: (android.net.Uri, String, String, String) -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     var deckToDelete by remember { mutableStateOf<Deck?>(null) }
     var showImportNameDialog by remember { mutableStateOf(false) }
     var selectedUri by remember { mutableStateOf<android.net.Uri?>(null) }
     var importName by remember { mutableStateOf("") }
+    var importFrontLang by remember { mutableStateOf("other") }
+    var importBackLang by remember { mutableStateOf("other") }
+
+    val languages = listOf(
+        "en" to "English",
+        "de" to "German",
+        "fr" to "French",
+        "es" to "Spanish",
+        "it" to "Italian",
+        "ja" to "Japanese",
+        "zh" to "Chinese",
+        "ko" to "Korean",
+        "ru" to "Russian",
+        "pt" to "Portuguese",
+        "nl" to "Dutch",
+        "tr" to "Turkish",
+        "ar" to "Arabic",
+        "el" to "Greek",
+        "pl" to "Polish",
+        "sv" to "Swedish",
+        "da" to "Danish",
+        "no" to "Norwegian",
+        "fi" to "Finnish",
+        "hi" to "Hindi",
+        "id" to "Indonesian",
+        "th" to "Thai",
+        "vi" to "Vietnamese"
+    ).sortedBy { it.second } + ("other" to "Other (No Audio)")
 
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -62,6 +90,8 @@ fun DeckListScreen(
         if (uri != null) {
             selectedUri = uri
             importName = "Imported Anki Deck"
+            importFrontLang = "other"
+            importBackLang = "other"
             showImportNameDialog = true
         }
     }
@@ -72,19 +102,33 @@ fun DeckListScreen(
             title = { Text("Import Anki Deck") },
             text = {
                 Column {
-                    Text("Enter a name for the new deck:")
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Enter a name and select languages for the new deck:")
+                    Spacer(modifier = Modifier.height(16.dp))
                     OutlinedTextField(
                         value = importName,
                         onValueChange = { importName = it },
                         label = { Text("Deck Name") }
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    LanguageDropdown(
+                        label = "Front Language",
+                        selectedCode = importFrontLang,
+                        onLanguageSelected = { importFrontLang = it },
+                        languages = languages
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    LanguageDropdown(
+                        label = "Back Language",
+                        selectedCode = importBackLang,
+                        onLanguageSelected = { importBackLang = it },
+                        languages = languages
                     )
                 }
             },
             confirmButton = {
                 TextButton(onClick = {
                     if (importName.isNotBlank() && selectedUri != null) {
-                        onImportAnkiClick(selectedUri!!, importName)
+                        onImportAnkiClick(selectedUri!!, importName, importFrontLang, importBackLang)
                         showImportNameDialog = false
                     }
                 }) { Text("Import") }

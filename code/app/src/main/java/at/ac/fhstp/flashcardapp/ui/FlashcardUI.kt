@@ -57,8 +57,8 @@ fun FlashcardApp(
                     onStartReviewClick = { deck ->
                         navController.navigate("${Routes.Review.name}/${deck.id}?practice=false")
                     },
-                    onImportAnkiClick = { uri, name ->
-                        viewModel.importAnkiDeck(context, uri, name)
+                    onImportAnkiClick = { uri, name, frontLang, backLang ->
+                        viewModel.importAnkiDeck(context, uri, name, frontLang, backLang)
                     }
                 )
             }

@@ -26,6 +26,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -243,12 +244,14 @@ fun ReviewScreen(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    val rotation = (offset.value / screenWidth) * 15f
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(250.dp)
                             .padding(16.dp)
                             .offset { IntOffset(offset.value.roundToInt(), 0) }
+                            .graphicsLayer(rotationZ = rotation)
                             .pointerInput(hasFlipped, flashcard.id) {
                                 detectHorizontalDragGestures(
                                     onDragEnd = {
@@ -296,20 +299,20 @@ fun ReviewScreen(
                                     if (hasFlipped) {
                                         scope.launch {
                                             offset.snapTo(offset.value + dragAmount)
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                },
-                                                                onClick = {
-                                                                    showBack = !showBack
-                                                                    hasFlipped = true
-                                                                },
-                                                                shape = RoundedCornerShape(28.dp),
-                                                                border = BorderStroke(borderWidth, borderColor),
-                                                                colors = CardDefaults.cardColors(
-                                                                    containerColor = MaterialTheme.colorScheme.surface
-                                                                )
-                                                            ) {                        Column(
+                                        }
+                                    }
+                                }
+                            },
+                        onClick = {
+                            showBack = !showBack
+                            hasFlipped = true
+                        },
+                        shape = RoundedCornerShape(28.dp),
+                        border = BorderStroke(borderWidth, borderColor),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        )
+                    ) {                        Column(
                             modifier = Modifier.fillMaxSize(),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
