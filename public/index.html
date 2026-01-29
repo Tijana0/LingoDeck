@@ -169,7 +169,44 @@ graph TD
         <li><strong>Study Mode (The Core Loop):</strong> The clean interface where cards are presented. Users interact via gestures (swiping) to grade their memory retention, which immediately updates the database schedule.</li>
     </ol>
 
-    <h3>4. Git Repo</h3>
+    <h3>4. Data Model</h3>
+    <p>The app persists data locally using <strong>Room Database</strong>. The core entities are Decks, Flashcards, and Study Sessions.</p>
+    
+    <div class="mermaid-container">
+        <div class="mermaid">
+erDiagram
+    DECKS ||--o{ FLASHCARDS : contains
+    DECKS ||--o{ STUDY_SESSIONS : "logs history for"
+
+    DECKS {
+        int id PK
+        string name
+        string frontLanguage
+        string backLanguage
+    }
+
+    FLASHCARDS {
+        int id PK
+        int deckId FK
+        string front
+        string back
+        long dueDate
+        float interval
+        float easeFactor
+    }
+
+    STUDY_SESSIONS {
+        int id PK
+        int deckId
+        long date
+        int correct
+        int incorrect
+    }
+        </div>
+    </div>
+    <p style="text-align: center; font-size: 0.9rem; color: #666; margin-top: 0.5rem;">Entity Relationship Diagram (ERD)</p>
+
+    <h3>5. Git Repo</h3>
     <a href="https://git.nwt.fhstp.ac.at/cc241005/ccl3-ws2025" target="_blank">https://git.nwt.fhstp.ac.at/cc241005/ccl3-ws2025</a>
 
 </div>
