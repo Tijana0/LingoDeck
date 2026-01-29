@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.FileOpen
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
@@ -44,6 +45,7 @@ fun DeckListScreen(
     onEditDeckClick: (Deck) -> Unit,
     onDeleteDeckClick: (Deck) -> Unit,
     onStartReviewClick: (Deck) -> Unit,
+    onStartPracticeClick: (Deck) -> Unit,
     onImportAnkiClick: (android.net.Uri, String, String, String) -> Unit
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
@@ -353,7 +355,13 @@ fun DeckListScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 10.dp)
-                                .clickable { onDeckClick(deck) },
+                                .clickable {
+                                    if (deckUi.dueCards > 0) {
+                                        onStartReviewClick(deck)
+                                    } else {
+                                        onStartPracticeClick(deck)
+                                    }
+                                },
                             shape = RoundedCornerShape(22.dp),
                             colors = CardDefaults.cardColors(containerColor = Color.Transparent),
                             border = BorderStroke(
@@ -415,14 +423,12 @@ fun DeckListScreen(
                                         }
 
                                         Row {
-                                            if (deckUi.dueCards > 0) {
-                                                IconButton(onClick = { onStartReviewClick(deck) }) {
-                                                    Icon(
-                                                        imageVector = Icons.Default.PlayArrow,
-                                                        contentDescription = "Start Review",
-                                                        tint = Color.White
-                                                    )
-                                                }
+                                            IconButton(onClick = { onDeckClick(deck) }) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Info,
+                                                    contentDescription = "Details",
+                                                    tint = Color.White
+                                                )
                                             }
 
                                             // MENU BUTTON
