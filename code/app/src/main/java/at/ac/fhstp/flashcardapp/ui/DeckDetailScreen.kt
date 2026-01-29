@@ -3,6 +3,7 @@ package at.ac.fhstp.flashcardapp.ui
 import android.graphics.Paint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -89,7 +90,9 @@ fun DeckDetailScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 20.dp)
+                    .background(BgDark)
+                    .navigationBarsPadding()
+                    .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 16.dp)
             ) {
                 ActionButtonsRow(
                     onStartReviewClick = onStartReviewClick,
@@ -265,12 +268,16 @@ fun ActionButtonsRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        OutlinedButton(
+        Button(
             onClick = onStartPracticeClick,
             enabled = totalCount > 0,
             modifier = Modifier.weight(1f).height(56.dp),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = AccentPurple),
-            border = BorderStroke(1.dp, AccentPurple),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = AccentBlue,
+                contentColor = TextWhite,
+                disabledContainerColor = AccentBlue.copy(alpha = 0.5f),
+                disabledContentColor = TextWhite.copy(alpha = 0.5f)
+            ),
             shape = RoundedCornerShape(16.dp)
         ) {
             Text("Practice")

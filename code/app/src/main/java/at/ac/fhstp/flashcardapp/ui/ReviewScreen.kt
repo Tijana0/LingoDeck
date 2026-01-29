@@ -370,7 +370,9 @@ fun ReviewSummaryScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 20.dp)
+                    .background(SummaryBgDark)
+                    .navigationBarsPadding()
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 8.dp)
             ) {
                 Button(
                     onClick = onBackToDeck,
