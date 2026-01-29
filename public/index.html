@@ -204,7 +204,72 @@ erDiagram
     </div>
     <p style="text-align: center; font-size: 0.9rem; color: #666; margin-top: 0.5rem;">Entity Relationship Diagram (ERD)</p>
 
-    <h3>5. Git Repo</h3>
+    <h3>5. Usability Test</h3>
+    
+    <h4>Usability Test Plan</h4>
+    <ul>
+        <li><strong>Heuristic Evaluation:</strong> Conducted using Nielsen's 10 Usability Heuristics to identify initial issues (e.g., lack of system status visibility, confusing navigation).</li>
+        <li><strong>Hypothesis:</strong> Users will struggle with gesture discoverability (H1) and understanding the "Start Review" interaction model (H5) but will find the completion screen motivating (H9).</li>
+        <li><strong>Planned Data to Collect:</strong>
+            <ul>
+                <li><strong>Task Success Rate:</strong> Can users complete the review session?</li>
+                <li><strong>Error Rate:</strong> Frequency of mis-swipes or incorrect clicks.</li>
+                <li><strong>Subjective Metrics:</strong> SEQ (Single Ease Question) scores and SUS (System Usability Scale) feedback.</li>
+            </ul>
+        </li>
+        <li><strong>Methods Used:</strong> Moderated in-person testing with a "Think Aloud" protocol.
+            <ul>
+                <li><strong>Tasks:</strong> 1. Start a learning session, 2. Review flashcards, 3. Monitor progress, 4. Interpret feedback.</li>
+                <li><strong>Materials:</strong> Pre-test questionnaire, Post-task SEQ, Post-test SUS, and interview questions.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h4>User Test Results</h4>
+    <ul>
+        <li><strong>Participants:</strong> 5 test subjects (Age range: 18-36). Mixed experience with language learning apps; no prior experience with LingoDeck.</li>
+        <li><strong>Quantitative Evaluation Summary:</strong>
+            <br><br>
+            <table border="1" cellpadding="8" style="border-collapse: collapse; width: 100%; border-color: #eaeaea;">
+                <tr style="background-color: #f4f6f8;">
+                    <th>Metric</th>
+                    <th>Average Score</th>
+                    <th>Interpretation</th>
+                </tr>
+                <tr>
+                    <td><strong>Task Success Rate</strong></td>
+                    <td>100%</td>
+                    <td>All users completed the core loop, though some needed minor guidance.</td>
+                </tr>
+                <tr>
+                    <td><strong>SEQ (Ease of Use)</strong></td>
+                    <td>5.8 / 7</td>
+                    <td>Tasks were generally perceived as easy once the initial gesture was learned.</td>
+                </tr>
+                <tr>
+                    <td><strong>Swipe Error Rate</strong></td>
+                    <td>Low (< 10%)</td>
+                    <td>Users quickly adapted to the swipe mechanics after the first card.</td>
+                </tr>
+            </table>
+        </li>
+        <li><strong>Relevant Feedback / Comments:</strong>
+            <ul>
+                <li><em>"I didn't know I had to swipe at first, I tried tapping the buttons."</em> – (P1, P3)</li>
+                <li><em>"The 'Practice' button is blue, which is nice, but I thought it was the main action initially."</em> – (P2)</li>
+                <li><em>"I love the confetti at the end, it makes me feel accomplished."</em> – (P5)</li>
+            </ul>
+        </li>
+        <li><strong>Updates Based on Feedback:</strong>
+            <ul>
+                <li><strong>Swipe Hints:</strong> Added visual cues (rotation animations) during card swipes to better indicate interactivity.</li>
+                <li><strong>Button Hierarchy:</strong> Adjusted the 'Practice' button color to <code>AccentBlue</code> to differentiate it from the primary 'Review' action while maintaining visibility.</li>
+                <li><strong>Anki Import:</strong> Enhanced the import flow to allow language selection, improving the TTS experience for imported decks.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h3>6. Git Repo</h3>
     <a href="https://git.nwt.fhstp.ac.at/cc241005/ccl3-ws2025" target="_blank">https://git.nwt.fhstp.ac.at/cc241005/ccl3-ws2025</a>
 
 </div>
