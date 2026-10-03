@@ -1,64 +1,89 @@
-Example plain HTML site using GitLab Pages.
+# LingoDeck
 
-Learn more about GitLab Pages at https://pages.gitlab.io and the official
-documentation https://docs.gitlab.com/ce/user/project/pages/.
+LingoDeck is a native Android language-learning app built with **Kotlin** and **Jetpack Compose**. It uses a spaced-repetition system to schedule flashcard reviews based on previous performance, helping learners focus on the cards that are due instead of repeatedly reviewing an entire deck.
+
+## Project context
+
+LingoDeck was developed as a two-person university project during a Creative Code Lab. I was responsible for the **application development** and also contributed to **user testing**, working closely with a teammate focused on UI/UX design.
+
+## Features
+
+- Create and manage language-learning decks
+- Add and organize flashcards within each deck
+- Review only cards that are currently due
+- Reveal answers and grade recall through a simple review flow
+- Adjust future review dates using spaced-repetition logic
+- Track upcoming reviews and study workload
+- Store decks, cards, and review state locally on the device
+
+## Tech stack
+
+- **Kotlin**
+- **Jetpack Compose** + Material 3
+- **Room** for local persistence
+- **Navigation Compose**
+- **ViewModel / repository-based data flow**
+- **Gradle** + KSP
+
+## How the spaced-repetition logic works
+
+Each flashcard stores a due date, review interval, and ease factor. After a review, the scheduling logic updates those values depending on whether the learner remembered the card.
+
+A successful review increases the interval before the card appears again, while an unsuccessful review shortens the interval so the card returns sooner.
+
+The scheduling logic is kept separate from the UI so it can be changed or extended without tightly coupling it to the Compose screens.
+
+## Architecture
+
+The app is organized into separate layers for UI, data access, persistence, and review logic:
+
+```
+Compose UI
+   ↓
+ViewModel / application state
+   ↓
+Repository
+   ↓
+Room DAOs
+   ↓
+Local database
+
+Review answer
+   ↓
+Spaced-repetition logic
+   ↓
+Updated scheduling data
+```
+
+The repository maps between the app's domain models and Room entities, keeping database-specific concerns out of the UI layer.
+
+## Project structure
+
+```
+code/
+├── app/src/main/java/at/ac/fhstp/flashcardapp/
+│   ├── data/      # Domain models and repository
+│   ├── db/        # Room entities, DAOs, and database
+│   ├── logic/     # Spaced-repetition logic
+│   └── ui/        # Jetpack Compose screens and components
+├── build.gradle.kts
+└── settings.gradle.kts
+```
+
+## Running the project
+
+1. Clone the repository.
+2. Open the `code/` directory in Android Studio.
+3. Let Gradle synchronize the project dependencies.
+4. Run the app on an Android emulator or device.
+
+The project currently targets Android SDK 36 and supports Android API 26+.
+
+## Team
+
+- **Tijana Mijatović** — development, implementation, user testing
+- **Diana Simonicova** — UI/UX design
 
 ---
 
-<!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
-
-- [GitLab CI](#gitlab-ci)
-- [GitLab User or Group Pages](#gitlab-user-or-group-pages)
-- [Did you fork this project?](#did-you-fork-this-project)
-- [Troubleshooting](#troubleshooting)
-
-<!-- END doctoc generated TOC please keep comment here to allow auto update -->
-
-## GitLab CI
-
-This project's static Pages are built by [GitLab CI][ci], following the steps
-defined in [`.gitlab-ci.yml`](.gitlab-ci.yml):
-
-```
-image: busybox
-
-pages:
-  stage: deploy
-  script:
-  - echo 'Nothing to do...'
-  artifacts:
-    paths:
-    - public
-    expire_in: 1 day
-  rules:
-    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
-```
-
-The above example expects to put all your HTML files in the `public/` directory.
-
-## GitLab User or Group Pages
-
-To use this project as your user/group website, you will need one additional
-step: just rename your project to `namespace.gitlab.io`, where `namespace` is
-your `username` or `groupname`. This can be done by navigating to your
-project's **Settings**.
-
-Read more about [user/group Pages][userpages] and [project Pages][projpages].
-
-## Did you fork this project?
-
-If you forked this project for your own use, please go to your project's
-**Settings** and remove the forking relationship, which won't be necessary
-unless you want to contribute back to the upstream project.
-
-## Troubleshooting
-
-1. CSS is missing! That means that you have wrongly set up the CSS URL in your
-   HTML files. Have a look at the [index.html] for an example.
-
-[ci]: https://about.gitlab.com/gitlab-ci/
-[index.html]: https://gitlab.com/pages/plain-html/blob/master/public/index.html
-[userpages]: https://docs.gitlab.com/ce/user/project/pages/introduction.html#user-or-group-pages
-[projpages]: https://docs.gitlab.com/ce/user/project/pages/introduction.html#project-pages
+This repository is a university project and is being kept as part of my software-development portfolio.
